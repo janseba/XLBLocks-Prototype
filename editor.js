@@ -13,5 +13,6 @@
 		console.log('Er is geklikt');
 		var testString = localStorage.getItem("formulaID");
 		console.log(testString);
+		Office.context.ui.messageParent(testString);
 	}
 }());
