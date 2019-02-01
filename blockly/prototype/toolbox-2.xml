@@ -1,0 +1,10 @@
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="Functions" colour="#5ba593">
+    <block type="rowsum"></block>
+    <block type="columnsum"></block>
+    <block type="datablock">
+      <field name="RANGE"> Range</field>
+    </block>
+  </category>
+  <category name="Named Ranges" colour="#A65C81" custom="VARIABLE"></category>
+</xml>

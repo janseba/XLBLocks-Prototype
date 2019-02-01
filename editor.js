@@ -6,6 +6,7 @@
 				// TODO1: Assign handler to the OK button.
 				$('#ok-button').click(sendStringToParentPage);
 				console.log('Dit is een test');
+				delete window.prompt;
 			});
 		});
 	// TODO2: Create the OK button handler

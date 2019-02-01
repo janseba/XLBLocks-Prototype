@@ -1,0 +1,58 @@
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta charset="utf-8">
+  <title>Blockly Demo: Fixed Blockly</title>
+  <script src="../blockly_compressed.js"></script>
+  <script src="../blocks_compressed.js"></script> 
+  <script src="ExcelGenerator.js"></script>
+  <script src="ExcelBlocks.js"></script>
+  <script src="../msg/js/en.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="blocklyDiv" style="height: 910px; width: 820px;"></div>
+
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="Workbook Mgt" colour="#5ba5a5">
+    <block type="formula">
+      <field name="formula_name">formula name</field>
+    </block>
+    <block type="definenamedranges"></block>
+  </category>
+  <category name="Functions" colour="#5b6da5">
+    <block type="sum"></block>
+    <block type="rowsum"></block>
+    <block type="columnsum"></block>
+    <block type="find"></block>
+  </category>
+  <category name="Cell references" colour="#80a55b">
+    <block type="datablock">
+      <field name="NAME">FALSE</field>
+      <field name="RANGE">A1:B2</field>
+    </block>
+    <block type="range">
+      <field name="NAME">A1:B2</field>
+    </block>
+  </category>
+  <category name="Named Ranges" colour="#a55b93" custom="VARIABLE"></category>
+</xml>
+
+  <script>
+    var demoWorkspace = Blockly.inject('blocklyDiv',
+        {media: '../../media/',
+         toolbox: document.getElementById('toolbox')});
+  </script>
+
+</body>
+</html>
