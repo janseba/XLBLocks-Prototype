@@ -14,8 +14,6 @@
 
 		var dialog;
 		function startEditor() {
-			localStorage.setItem("formulaID","Een voorbeeldtekst");
-			console.log('start editor log');
 			
 			Office.context.ui.displayDialogAsync(
 				'https://localhost:3000/editor.html',
@@ -28,6 +26,7 @@
 		function processMessage(arg) {
 			var messageFromDialog = arg.message;
 			console.log(messageFromDialog);
+			localStorage.setItem("BlocklyWorkspace", messageFromDialog)
 			document.getElementById("message").innerHTML = messageFromDialog;
 			dialog.close();
 		}

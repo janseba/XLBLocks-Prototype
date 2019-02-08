@@ -6,14 +6,17 @@
 				// TODO1: Assign handler to the OK button.
 				$('#save-formulas').click(sendStringToParentPage);
 				delete window.prompt;
+				var blocklyWorkspace = localStorage.getItem("BlocklyWorkspace");
+				var xml = Blockly.Xml.textToDom(blocklyWorkspace);
+				Blockly.Xml.domToWorkspace(xml, workspace);
 			});
 		});
 	// TODO2: Create the OK button handler
 	function sendStringToParentPage() {
-		var testString = localStorage.getItem("formulaID");
-		var xml = Blockly.Xml.workspaceToDom(workspace);
-		var xml_text = Blockly.Xml.domToText(xml);
-		console.log(testString);
+		var testBlock = workspace.getTopBlocks(true);
+		var xml = Blockly.Xml.blockToDom(block);
+		var xml_text = Blockly.Xml.domToPrettyText(xml);
+		console.log(xml_text);
 		Office.context.ui.messageParent(xml_text);
 	}
 }());

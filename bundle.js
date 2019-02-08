@@ -60,8 +60,6 @@
 
 		var dialog;
 		function startEditor() {
-			localStorage.setItem("formulaID", "Een voorbeeldtekst");
-			console.log('start editor log');
 
 			Office.context.ui.displayDialogAsync('https://localhost:3000/editor.html', { height: 90, width: 90 }, function (asyncResult) {
 				dialog = asyncResult.value;
@@ -71,6 +69,7 @@
 		function processMessage(arg) {
 			var messageFromDialog = arg.message;
 			console.log(messageFromDialog);
+			localStorage.setItem("BlocklyWorkspace", messageFromDialog);
 			document.getElementById("message").innerHTML = messageFromDialog;
 			dialog.close();
 		}
