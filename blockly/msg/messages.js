@@ -81,6 +81,8 @@ Blockly.Msg.DUPLICATE_BLOCK = 'Duplicate';
 Blockly.Msg.ADD_COMMENT = 'Add Comment';
 /// context menu - Remove the descriptive comment from the selected block.
 Blockly.Msg.REMOVE_COMMENT = 'Remove Comment';
+/// context menu - Make a copy of the selected workspace comment.\n{{Identical|Duplicate}}
+Blockly.Msg.DUPLICATE_COMMENT = 'Duplicate Comment';
 /// context menu - Change from 'external' to 'inline' mode for displaying blocks used as inputs to the selected block.  See [[Translating:Blockly#context_menus]].
 Blockly.Msg.EXTERNAL_INPUTS = 'External Inputs';
 /// context menu - Change from 'internal' to 'external' mode for displaying blocks used as inputs to the selected block.  See [[Translating:Blockly#context_menus]].
@@ -554,6 +556,13 @@ Blockly.Msg.MATH_RANDOM_FLOAT_HELPURL = 'https://en.wikipedia.org/wiki/Random_nu
 Blockly.Msg.MATH_RANDOM_FLOAT_TITLE_RANDOM = 'random fraction';
 /// tooltip - Return a random fraction between 0 and 1.  The value may be equal to 0 but must be less than 1.
 Blockly.Msg.MATH_RANDOM_FLOAT_TOOLTIP = 'Return a random fraction between 0.0 (inclusive) and 1.0 (exclusive).';
+
+/// {{Optional}} url - Information about how to calculate atan2.
+Blockly.Msg.MATH_ATAN2_HELPURL = 'https://en.wikipedia.org/wiki/Atan2';
+/// block text - The title of the block that calculates atan2 of point (X, Y).  For example, if the point is (-1, -1), this returns -135. %1 is a placeholder for the X coordinate, %2 is the placeholder for the Y coordinate.
+Blockly.Msg.MATH_ATAN2_TITLE = 'atan2 of X:%1 Y:%2';
+/// tooltip - Return the arctangent of point (X, Y) in degrees from -180 to 180. For example, if the point is (-1, -1) this returns -135.
+Blockly.Msg.MATH_ATAN2_TOOLTIP = 'Return the arctangent of point (X, Y) in degrees from -180 to 180.';
 
 // Text Blocks.
 /// {{Optional}} url - Information about how computers represent text (sometimes referred to as ''string''s).
@@ -1193,3 +1202,7 @@ Blockly.Msg.PROCEDURES_IFRETURN_TOOLTIP = 'If a value is true, then return a sec
 Blockly.Msg.PROCEDURES_IFRETURN_HELPURL = 'http://c2.com/cgi/wiki?GuardClause';
 /// warning - This appears if the user tries to use this block outside of a function definition.
 Blockly.Msg.PROCEDURES_IFRETURN_WARNING = 'Warning: This block may be used only within a function definition.';
+
+/// comment text - This text appears in a new workspace comment, to hint that
+/// the user can type here.
+Blockly.Msg.WORKSPACE_COMMENT_DEFAULT_TEXT = 'Say something...';

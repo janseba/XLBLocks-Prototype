@@ -30,8 +30,7 @@
  */
 goog.provide('Blockly.Events');
 
-goog.require('goog.array');
-goog.require('goog.math.Coordinate');
+goog.require('Blockly.utils');
 
 
 /**
@@ -127,6 +126,30 @@ Blockly.Events.VAR_RENAME = 'var_rename';
 Blockly.Events.UI = 'ui';
 
 /**
+ * Name of event that creates a comment.
+ * @const
+ */
+Blockly.Events.COMMENT_CREATE = 'comment_create';
+
+/**
+ * Name of event that deletes a comment.
+ * @const
+ */
+Blockly.Events.COMMENT_DELETE = 'comment_delete';
+
+/**
+ * Name of event that changes a comment.
+ * @const
+ */
+Blockly.Events.COMMENT_CHANGE = 'comment_change';
+
+/**
+ * Name of event that moves a comment.
+ * @const
+ */
+Blockly.Events.COMMENT_MOVE = 'comment_move';
+
+/**
  * List of events queued for firing.
  * @private
  */
@@ -169,7 +192,7 @@ Blockly.Events.fireNow_ = function() {
  * @return {!Array.<!Blockly.Events.Abstract>} Array of filtered events.
  */
 Blockly.Events.filter = function(queueIn, forward) {
-  var queue = goog.array.clone(queueIn);
+  var queue = queueIn.slice();  // Shallow copy of queue.
   if (!forward) {
     // Undo is merged in reverse order.
     queue.reverse();
@@ -180,15 +203,22 @@ Blockly.Events.filter = function(queueIn, forward) {
   for (var i = 0, event; event = queue[i]; i++) {
     if (!event.isNull()) {
       var key = [event.type, event.blockId, event.workspaceId].join(' ');
-      var lastEvent = hash[key];
-      if (!lastEvent) {
-        hash[key] = event;
+
+      var lastEntry = hash[key];
+      var lastEvent = lastEntry ? lastEntry.event : null;
+      if (!lastEntry) {
+        // Each item in the hash table has the event and the index of that event
+        // in the input array.  This lets us make sure we only merge adjacent
+        // move events.
+        hash[key] = { event: event, index: i};
         mergedQueue.push(event);
-      } else if (event.type == Blockly.Events.MOVE) {
+      } else if (event.type == Blockly.Events.MOVE &&
+          lastEntry.index == i - 1) {
         // Merge move events.
         lastEvent.newParentId = event.newParentId;
         lastEvent.newInputName = event.newInputName;
         lastEvent.newCoordinate = event.newCoordinate;
+        lastEntry.index = i;
       } else if (event.type == Blockly.Events.CHANGE &&
           event.element == lastEvent.element &&
           event.name == lastEvent.name) {
@@ -202,8 +232,9 @@ Blockly.Events.filter = function(queueIn, forward) {
         // Merge click events.
         lastEvent.newValue = event.newValue;
       } else {
-        // Collision: newer events should merge into this event to maintain order
-        hash[key] = event;
+        // Collision: newer events should merge into this event to maintain
+        // order.
+        hash[key] = { event: event, index: 1};
         mergedQueue.push(event);
       }
     }
@@ -287,7 +318,7 @@ Blockly.Events.setGroup = function(state) {
  */
 Blockly.Events.getDescendantIds_ = function(block) {
   var ids = [];
-  var descendants = block.getDescendants();
+  var descendants = block.getDescendants(false);
   for (var i = 0, descendant; descendant = descendants[i]; i++) {
     ids[i] = descendant.id;
   }
@@ -328,8 +359,20 @@ Blockly.Events.fromJson = function(json, workspace) {
     case Blockly.Events.UI:
       event = new Blockly.Events.Ui(null);
       break;
+    case Blockly.Events.COMMENT_CREATE:
+      event = new Blockly.Events.CommentCreate(null);
+      break;
+    case Blockly.Events.COMMENT_CHANGE:
+      event = new Blockly.Events.CommentChange(null);
+      break;
+    case Blockly.Events.COMMENT_MOVE:
+      event = new Blockly.Events.CommentMove(null);
+      break;
+    case Blockly.Events.COMMENT_DELETE:
+      event = new Blockly.Events.CommentDelete(null);
+      break;
     default:
-      throw 'Unknown event type.';
+      throw Error('Unknown event type.');
   }
   event.fromJson(json);
   event.workspaceId = workspace.id;
@@ -350,7 +393,7 @@ Blockly.Events.disableOrphans = function(event) {
     var block = workspace.getBlockById(event.blockId);
     if (block) {
       if (block.getParent() && !block.getParent().disabled) {
-        var children = block.getDescendants();
+        var children = block.getDescendants(false);
         for (var i = 0, child; child = children[i]; i++) {
           child.setDisabled(false);
         }

@@ -13,6 +13,7 @@
 	"DUPLICATE_BLOCK": "context menu - Make a copy of the selected block (and any blocks it contains).\n{{Identical|Duplicate}}",
 	"ADD_COMMENT": "context menu - Add a descriptive comment to the selected block.",
 	"REMOVE_COMMENT": "context menu - Remove the descriptive comment from the selected block.",
+	"DUPLICATE_COMMENT": "context menu - Make a copy of the selected workspace comment.\n{{Identical|Duplicate}}",
 	"EXTERNAL_INPUTS": "context menu - Change from 'external' to 'inline' mode for displaying blocks used as inputs to the selected block.  See [[Translating:Blockly#context_menus]].",
 	"INLINE_INPUTS": "context menu - Change from 'internal' to 'external' mode for displaying blocks used as inputs to the selected block.  See [[Translating:Blockly#context_menus]].",
 	"DELETE_BLOCK": "context menu - Permanently delete the selected block.",
@@ -214,6 +215,9 @@
 	"MATH_RANDOM_FLOAT_HELPURL": "{{Optional}} url - Information about how computers generate random numbers (specifically, numbers in the range from 0 to just below 1).",
 	"MATH_RANDOM_FLOAT_TITLE_RANDOM": "block text - The title of the block that generates a random number greater than or equal to 0 and less than 1.",
 	"MATH_RANDOM_FLOAT_TOOLTIP": "tooltip - Return a random fraction between 0 and 1.  The value may be equal to 0 but must be less than 1.",
+	"MATH_ATAN2_HELPURL": "{{Optional}} url - Information about how to calculate atan2.",
+	"MATH_ATAN2_TITLE": "block text - The title of the block that calculates atan2 of point (X, Y).  For example, if the point is (-1, -1), this returns -135. %1 is a placeholder for the X coordinate, %2 is the placeholder for the Y coordinate.",
+	"MATH_ATAN2_TOOLTIP": "tooltip - Return the arctangent of point (X, Y) in degrees from -180 to 180. For example, if the point is (-1, -1) this returns -135.",
 	"TEXT_TEXT_HELPURL": "{{Optional}} url - Information about how computers represent text (sometimes referred to as ''string''s).",
 	"TEXT_TEXT_TOOLTIP": "tooltip - See [https://github.com/google/blockly/wiki/Text https://github.com/google/blockly/wiki/Text].",
 	"TEXT_JOIN_HELPURL": "{{Optional}} url - Information on concatenating/appending pieces of text.",
@@ -399,5 +403,6 @@
 	"PROCEDURES_CREATE_DO": "context menu - This appears on the context menu for function definitions. Selecting it creates a block to call the function.\n\nParameters:\n* %1 - the name of the function.\n{{Identical|Create}}",
 	"PROCEDURES_IFRETURN_TOOLTIP": "tooltip - If the first value is true, this causes the second value to be returned immediately from the enclosing function.",
 	"PROCEDURES_IFRETURN_HELPURL": "{{Optional}} url - Information about guard clauses.",
-	"PROCEDURES_IFRETURN_WARNING": "warning - This appears if the user tries to use this block outside of a function definition."
+	"PROCEDURES_IFRETURN_WARNING": "warning - This appears if the user tries to use this block outside of a function definition.",
+	"WORKSPACE_COMMENT_DEFAULT_TEXT": "comment text - This text appears in a new workspace comment, to hint that the user can type here."
 }

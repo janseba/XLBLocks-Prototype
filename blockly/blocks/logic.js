@@ -37,7 +37,7 @@ goog.require('Blockly');
 
 /**
  * Unused constant for the common HSV hue for all blocks in this category.
- * @deprecated Use Blockly.Msg.LOGIC_HUE. (2018 April 5)
+ * @deprecated Use Blockly.Msg['LOGIC_HUE']. (2018 April 5)
  */
 Blockly.Constants.Logic.HUE = 210;
 
@@ -133,10 +133,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "options": [
           ["=", "EQ"],
           ["\u2260", "NEQ"],
-          ["<", "LT"],
-          ["\u2264", "LTE"],
-          [">", "GT"],
-          ["\u2265", "GTE"]
+          ["\u200F<", "LT"],
+          ["\u200F\u2264", "LTE"],
+          ["\u200F>", "GT"],
+          ["\u200F\u2265", "GTE"]
         ]
       },
       {
@@ -331,7 +331,7 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
   domToMutation: function(xmlElement) {
     this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0;
     this.elseCount_ = parseInt(xmlElement.getAttribute('else'), 10) || 0;
-    this.updateShape_();
+    this.rebuildShape_();
   },
   /**
    * Populate the mutator's dialog with this block's components.
@@ -381,18 +381,15 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
           elseStatementConnection = clauseBlock.statementConnection_;
           break;
         default:
-          throw 'Unknown block type.';
+          throw TypeError('Unknown block type: ' + clauseBlock.type);
       }
       clauseBlock = clauseBlock.nextConnection &&
           clauseBlock.nextConnection.targetBlock();
     }
     this.updateShape_();
     // Reconnect any child blocks.
-    for (var i = 1; i <= this.elseifCount_; i++) {
-      Blockly.Mutator.reconnect(valueConnections[i], this, 'IF' + i);
-      Blockly.Mutator.reconnect(statementConnections[i], this, 'DO' + i);
-    }
-    Blockly.Mutator.reconnect(elseStatementConnection, this, 'ELSE');
+    this.reconnectChildBlocks_(valueConnections, statementConnections,
+        elseStatementConnection);
   },
   /**
    * Store pointers to any connected child blocks.
@@ -419,11 +416,34 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
               inputDo && inputDo.connection.targetConnection;
           break;
         default:
-          throw 'Unknown block type.';
+          throw TypeError('Unknown block type: ' + clauseBlock.type);
       }
       clauseBlock = clauseBlock.nextConnection &&
           clauseBlock.nextConnection.targetBlock();
     }
+  },
+  /**
+   * Reconstructs the block with all child blocks attached.
+   */
+  rebuildShape_: function() {
+    var valueConnections = [null];
+    var statementConnections = [null];
+    var elseStatementConnection = null;
+
+    if (this.getInput('ELSE')) {
+      elseStatementConnection = this.getInput('ELSE').connection.targetConnection;
+    }
+    var i = 1;
+    while (this.getInput('IF' + i)) {
+      var inputIf = this.getInput('IF' + i);
+      var inputDo = this.getInput('DO' + i);
+      valueConnections.push(inputIf.connection.targetConnection);
+      statementConnections.push(inputDo.connection.targetConnection);
+      i++;
+    }
+    this.updateShape_();
+    this.reconnectChildBlocks_(valueConnections, statementConnections,
+        elseStatementConnection);
   },
   /**
    * Modify this block to have the correct number of inputs.
@@ -445,14 +465,31 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
     for (var i = 1; i <= this.elseifCount_; i++) {
       this.appendValueInput('IF' + i)
           .setCheck('Boolean')
-          .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSEIF);
+          .appendField(Blockly.Msg['CONTROLS_IF_MSG_ELSEIF']);
       this.appendStatementInput('DO' + i)
-          .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
+          .appendField(Blockly.Msg['CONTROLS_IF_MSG_THEN']);
     }
     if (this.elseCount_) {
       this.appendStatementInput('ELSE')
-          .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSE);
+          .appendField(Blockly.Msg['CONTROLS_IF_MSG_ELSE']);
     }
+  },
+  /**
+   * Reconnects child blocks.
+   * @param {!Array<?Blockly.RenderedConnection>} valueConnections List of value
+   * connectsions for if input.
+   * @param {!Array<?Blockly.RenderedConnection>} statementConnections List of
+   * statement connections for do input.
+   * @param {?Blockly.RenderedConnection} elseStatementConnection Statement
+   * connection for else input.
+   */
+  reconnectChildBlocks_: function(valueConnections, statementConnections,
+      elseStatementConnection) {
+    for (var i = 1; i <= this.elseifCount_; i++) {
+      Blockly.Mutator.reconnect(valueConnections[i], this, 'IF' + i);
+      Blockly.Mutator.reconnect(statementConnections[i], this, 'DO' + i);
+    }
+    Blockly.Mutator.reconnect(elseStatementConnection, this, 'ELSE');
   }
 };
 
@@ -469,13 +506,13 @@ Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION = function() {
 
   this.setTooltip(function() {
     if (!this.elseifCount_ && !this.elseCount_) {
-      return Blockly.Msg.CONTROLS_IF_TOOLTIP_1;
+      return Blockly.Msg['CONTROLS_IF_TOOLTIP_1'];
     } else if (!this.elseifCount_ && this.elseCount_) {
-      return Blockly.Msg.CONTROLS_IF_TOOLTIP_2;
+      return Blockly.Msg['CONTROLS_IF_TOOLTIP_2'];
     } else if (this.elseifCount_ && !this.elseCount_) {
-      return Blockly.Msg.CONTROLS_IF_TOOLTIP_3;
+      return Blockly.Msg['CONTROLS_IF_TOOLTIP_3'];
     } else if (this.elseifCount_ && this.elseCount_) {
-      return Blockly.Msg.CONTROLS_IF_TOOLTIP_4;
+      return Blockly.Msg['CONTROLS_IF_TOOLTIP_4'];
     }
     return '';
   }.bind(this));
@@ -485,35 +522,8 @@ Blockly.Extensions.register('controls_if_tooltip',
     Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION);
 
 /**
- * Corrects the logic_compare dropdown label with respect to language direction.
- * @this Blockly.Block
- * @package
- */
-Blockly.Constants.Logic.fixLogicCompareRtlOpLabels =
-  function() {
-    var rtlOpLabels = {
-      'LT': '\u200F<\u200F',
-      'LTE': '\u200F\u2264\u200F',
-      'GT': '\u200F>\u200F',
-      'GTE': '\u200F\u2265\u200F'
-    };
-    var opDropdown = this.getField('OP');
-    if (opDropdown) {
-      var options = opDropdown.getOptions();
-      for (var i = 0; i < options.length; ++i) {
-        var tuple = options[i];
-        var op = tuple[1];
-        var rtlLabel = rtlOpLabels[op];
-        if (goog.isString(tuple[0]) && rtlLabel) {
-          // Replace LTR text label
-          tuple[0] = rtlLabel;
-        }
-      }
-    }
-  };
-
-/**
- * Adds dynamic type validation for the left and right sides of a logic_compare block.
+ * Adds dynamic type validation for the left and right sides of a logic_compare
+ * block.
  * @mixin
  * @augments Blockly.Block
  * @package
@@ -564,19 +574,13 @@ Blockly.Constants.Logic.LOGIC_COMPARE_ONCHANGE_MIXIN = {
 };
 
 /**
- * "logic_compare" extension function. Corrects direction of operators in the
- * dropdown labels, and adds type left and right side type checking to
- * "logic_compare" blocks.
+ * "logic_compare" extension function. Adds type left and right side type
+ * checking to "logic_compare" blocks.
  * @this Blockly.Block
  * @package
  * @readonly
  */
 Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION = function() {
-  // Fix operator labels in RTL.
-  if (this.RTL) {
-    Blockly.Constants.Logic.fixLogicCompareRtlOpLabels.apply(this);
-  }
-
   // Add onchange handler to ensure types are compatible.
   this.mixin(Blockly.Constants.Logic.LOGIC_COMPARE_ONCHANGE_MIXIN);
 };

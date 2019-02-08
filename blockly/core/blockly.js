@@ -27,7 +27,7 @@
 /**
  * The top level namespace used to access the Blockly library.
  * @namespace Blockly
- **/
+ */
 goog.provide('Blockly');
 
 goog.require('Blockly.BlockSvg.render');
@@ -53,6 +53,7 @@ goog.require('Blockly.WorkspaceSvg');
 goog.require('Blockly.constants');
 goog.require('Blockly.inject');
 goog.require('Blockly.utils');
+goog.require('Blockly.Xml');
 
 goog.require('goog.color');
 
@@ -96,6 +97,13 @@ Blockly.clipboardXml_ = null;
  * @private
  */
 Blockly.clipboardSource_ = null;
+
+/**
+ * Map of types to type counts for the clipboard object and descendants.
+ * @type {Object}
+ * @private
+ */
+Blockly.clipboardTypeCounts_ = null;
 
 /**
  * Cached value for whether 3D is supported.
@@ -168,14 +176,21 @@ Blockly.svgResize = function(workspace) {
 };
 
 /**
- * Handle a key-down on SVG drawing surface.
+ * Handle a key-down on SVG drawing surface. Does nothing if the main workspace
+ * is not visible.
  * @param {!Event} e Key down event.
  * @private
  */
+// TODO (https://github.com/google/blockly/issues/1998) handle cases where there
+// are multiple workspaces and non-main workspaces are able to accept input.
 Blockly.onKeyDown_ = function(e) {
-  if (Blockly.mainWorkspace.options.readOnly || Blockly.utils.isTargetInput(e)) {
+  var workspace = Blockly.mainWorkspace;
+  if (workspace.options.readOnly || Blockly.utils.isTargetInput(e)
+      || (workspace.rendered && !workspace.isVisible())) {
     // No key actions on readonly workspaces.
     // When focused on an HTML text input widget, don't trap any keys.
+    // Ignore keypresses on rendered workspaces that have been explicitly
+    // hidden.
     return;
   }
   var deleteBlock = false;
@@ -189,7 +204,7 @@ Blockly.onKeyDown_ = function(e) {
     // data loss.
     e.preventDefault();
     // Don't delete while dragging.  Jeez.
-    if (Blockly.mainWorkspace.isDragging()) {
+    if (workspace.isDragging()) {
       return;
     }
     if (Blockly.selected && Blockly.selected.isDeletable()) {
@@ -197,7 +212,7 @@ Blockly.onKeyDown_ = function(e) {
     }
   } else if (e.altKey || e.ctrlKey || e.metaKey) {
     // Don't use meta keys during drags.
-    if (Blockly.mainWorkspace.isDragging()) {
+    if (workspace.isDragging()) {
       return;
     }
     if (Blockly.selected &&
@@ -219,20 +234,23 @@ Blockly.onKeyDown_ = function(e) {
     if (e.keyCode == 86) {
       // 'v' for paste.
       if (Blockly.clipboardXml_) {
-        Blockly.Events.setGroup(true);
-        // Pasting always pastes to the main workspace, even if the copy started
-        // in a flyout workspace.
+        // Pasting always pastes to the main workspace, even if the copy
+        // started in a flyout workspace.
         var workspace = Blockly.clipboardSource_;
         if (workspace.isFlyout) {
           workspace = workspace.targetWorkspace;
         }
-        workspace.paste(Blockly.clipboardXml_);
-        Blockly.Events.setGroup(false);
+        if (Blockly.clipboardTypeCounts_ &&
+            workspace.isCapacityAvailable(Blockly.clipboardTypeCounts_)) {
+          Blockly.Events.setGroup(true);
+          workspace.paste(Blockly.clipboardXml_);
+          Blockly.Events.setGroup(false);
+        }
       }
     } else if (e.keyCode == 90) {
       // 'z' for undo 'Z' is for redo.
       Blockly.hideChaff();
-      Blockly.mainWorkspace.undo(e.shiftKey);
+      workspace.undo(e.shiftKey);
     }
   }
   // Common code for delete and cut.
@@ -246,35 +264,43 @@ Blockly.onKeyDown_ = function(e) {
 };
 
 /**
- * Copy a block onto the local clipboard.
- * @param {!Blockly.Block} block Block to be copied.
+ * Copy a block or workspace comment onto the local clipboard.
+ * @param {!Blockly.Block | !Blockly.WorkspaceComment} toCopy Block or
+ *    Workspace Comment to be copied.
  * @private
  */
-Blockly.copy_ = function(block) {
-  var xmlBlock = Blockly.Xml.blockToDom(block);
-  // Copy only the selected block and internal blocks.
-  Blockly.Xml.deleteNext(xmlBlock);
-  // Encode start position in XML.
-  var xy = block.getRelativeToSurfaceXY();
-  xmlBlock.setAttribute('x', block.RTL ? -xy.x : xy.x);
-  xmlBlock.setAttribute('y', xy.y);
-  Blockly.clipboardXml_ = xmlBlock;
-  Blockly.clipboardSource_ = block.workspace;
+Blockly.copy_ = function(toCopy) {
+  if (toCopy.isComment) {
+    var xml = toCopy.toXmlWithXY();
+  } else {
+    var xml = Blockly.Xml.blockToDom(toCopy);
+    // Copy only the selected block and internal blocks.
+    Blockly.Xml.deleteNext(xml);
+    // Encode start position in XML.
+    var xy = toCopy.getRelativeToSurfaceXY();
+    xml.setAttribute('x', toCopy.RTL ? -xy.x : xy.x);
+    xml.setAttribute('y', xy.y);
+  }
+  Blockly.clipboardXml_ = xml;
+  Blockly.clipboardSource_ = toCopy.workspace;
+  Blockly.clipboardTypeCounts_ = toCopy.isComment ? null :
+      Blockly.utils.getBlockTypeCounts(toCopy, true);
 };
 
 /**
- * Duplicate this block and its children.
- * @param {!Blockly.Block} block Block to be copied.
+ * Duplicate this block and its children, or a workspace comment.
+ * @param {!Blockly.Block | !Blockly.WorkspaceComment} toDuplicate Block or
+ *     Workspace Comment to be copied.
  * @private
  */
-Blockly.duplicate_ = function(block) {
+Blockly.duplicate_ = function(toDuplicate) {
   // Save the clipboard.
   var clipboardXml = Blockly.clipboardXml_;
   var clipboardSource = Blockly.clipboardSource_;
 
   // Create a duplicate via a copy/paste operation.
-  Blockly.copy_(block);
-  block.workspace.paste(Blockly.clipboardXml_);
+  Blockly.copy_(toDuplicate);
+  toDuplicate.workspace.paste(Blockly.clipboardXml_);
 
   // Restore the clipboard.
   Blockly.clipboardXml_ = clipboardXml;
@@ -426,8 +452,8 @@ Blockly.defineBlocksWithJsonArray = function(jsonArray) {
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
  * @param {boolean=} opt_noCaptureIdentifier True if triggering on this event
- *     should not block execution of other event handlers on this touch or other
- *     simultaneous touches.
+ *     should not block execution of other event handlers on this touch or
+ *     other simultaneous touches.
  * @param {boolean=} opt_noPreventDefault True if triggering on this event
  *     should prevent the default handler.  False by default.  If
  *     opt_noPreventDefault is provided, opt_noCaptureIdentifier must also be
@@ -457,7 +483,7 @@ Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
   };
 
   var bindData = [];
-  if (window && window.PointerEvent && (name in Blockly.Touch.TOUCH_MAP)) {
+  if (goog.global.PointerEvent && (name in Blockly.Touch.TOUCH_MAP)) {
     for (var i = 0, type; type = Blockly.Touch.TOUCH_MAP[name][i]; i++) {
       node.addEventListener(type, wrapFunc, false);
       bindData.push([node, type, wrapFunc]);
@@ -509,6 +535,7 @@ Blockly.bindEvent_ = function(node, name, thisObject, func) {
   };
 
   var bindData = [];
+  var window = goog.global['window'];
   if (window && window.PointerEvent && (name in Blockly.Touch.TOUCH_MAP)) {
     for (var i = 0, type; type = Blockly.Touch.TOUCH_MAP[name][i]; i++) {
       node.addEventListener(type, wrapFunc, false);
@@ -624,7 +651,7 @@ Blockly.checkBlockColourConstant_ = function(
     msgName, blocklyNamePath, expectedValue) {
   var namePath = 'Blockly';
   var value = Blockly;
-  for (var i =0; i < blocklyNamePath.length; ++i) {
+  for (var i = 0; i < blocklyNamePath.length; ++i) {
     namePath += '.' + blocklyNamePath[i];
     if (value) {
       value = value[blocklyNamePath[i]];
@@ -633,8 +660,8 @@ Blockly.checkBlockColourConstant_ = function(
 
   if (value && value !== expectedValue) {
     var warningPattern = (expectedValue === undefined) ?
-        '%1 has been removed. Use Blockly.Msg.%2.' :
-        '%1 is deprecated and unused. Override Blockly.Msg.%2.';
+        '%1 has been removed. Use Blockly.Msg["%2"].' :
+        '%1 is deprecated and unused. Override Blockly.Msg["%2"].';
     var warning = warningPattern.replace('%1', namePath).replace('%2', msgName);
     console.warn(warning);
   }

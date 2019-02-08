@@ -28,10 +28,11 @@ goog.provide('Blockly.FieldVariable');
 
 goog.require('Blockly.FieldDropdown');
 goog.require('Blockly.Msg');
+goog.require('Blockly.utils');
 goog.require('Blockly.VariableModel');
 goog.require('Blockly.Variables');
-goog.require('goog.asserts');
-goog.require('goog.string');
+
+goog.require('goog.math.Size');
 
 
 /**
@@ -89,7 +90,7 @@ Blockly.FieldVariable.prototype.init = function() {
   }
   Blockly.FieldVariable.superClass_.init.call(this);
 
-  // TODO (1010): Change from init/initModel to initView/initModel
+  // TODO (#1010): Change from init/initModel to initView/initModel
   this.initModel();
 };
 
@@ -132,8 +133,9 @@ Blockly.FieldVariable.prototype.dispose = function() {
  * @param {!Blockly.Block} block The block containing this field.
  */
 Blockly.FieldVariable.prototype.setSourceBlock = function(block) {
-  goog.asserts.assert(!block.isShadow(),
-      'Variable fields are not allowed to exist on shadow blocks.');
+  if (block.isShadow()) {
+    throw Error('Variable fields are not allowed to exist on shadow blocks.');
+  }
   Blockly.FieldVariable.superClass_.setSourceBlock.call(this, block);
 };
 
@@ -176,14 +178,12 @@ Blockly.FieldVariable.prototype.setValue = function(id) {
   var variable = Blockly.Variables.getVariable(workspace, id);
 
   if (!variable) {
-    throw new Error('Variable id doesn\'t point to a real variable!  ID was ' +
-        id);
+    throw Error('Variable id doesn\'t point to a real variable!  ID was ' + id);
   }
   // Type checks!
   var type = variable.type;
   if (!this.typeIsAllowed_(type)) {
-    throw new Error('Variable type doesn\'t match this field!  Type was ' +
-        type);
+    throw Error('Variable type doesn\'t match this field!  Type was ' + type);
   }
   if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
     var oldValue = this.variable_ ? this.variable_.getId() : null;
@@ -234,7 +234,7 @@ Blockly.FieldVariable.prototype.getVariableTypes_ = function() {
   if (variableTypes.length == 0) {
     // Throw an error if variableTypes is an empty list.
     var name = this.getText();
-    throw new Error('\'variableTypes\' of field variable ' +
+    throw Error('\'variableTypes\' of field variable ' +
       name + ' was an empty list');
   }
   return variableTypes;
@@ -268,11 +268,11 @@ Blockly.FieldVariable.prototype.setTypes_ = function(opt_variableTypes,
       }
     }
     if (!isInArray) {
-      throw new Error('Invalid default type \'' + defaultType + '\' in ' +
+      throw Error('Invalid default type \'' + defaultType + '\' in ' +
           'the definition of a FieldVariable');
     }
   } else {
-    throw new Error('\'variableTypes\' was not an array in the definition of ' +
+    throw Error('\'variableTypes\' was not an array in the definition of ' +
         'a FieldVariable');
   }
   // Only update the field once all checks pass.
@@ -288,7 +288,7 @@ Blockly.FieldVariable.prototype.setTypes_ = function(opt_variableTypes,
  */
 Blockly.FieldVariable.dropdownCreate = function() {
   if (!this.variable_) {
-    throw new Error('Tried to call dropdownCreate on a variable field with no' +
+    throw Error('Tried to call dropdownCreate on a variable field with no' +
         ' variable selected.');
   }
   var name = this.getText();
@@ -314,11 +314,11 @@ Blockly.FieldVariable.dropdownCreate = function() {
     // Set the UUID as the internal representation of the variable.
     options[i] = [variableModelList[i].name, variableModelList[i].getId()];
   }
-  options.push([Blockly.Msg.RENAME_VARIABLE, Blockly.RENAME_VARIABLE_ID]);
-  if (Blockly.Msg.DELETE_VARIABLE) {
+  options.push([Blockly.Msg['RENAME_VARIABLE'], Blockly.RENAME_VARIABLE_ID]);
+  if (Blockly.Msg['DELETE_VARIABLE']) {
     options.push(
         [
-          Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
+          Blockly.Msg['DELETE_VARIABLE'].replace('%1', name),
           Blockly.DELETE_VARIABLE_ID
         ]
     );
@@ -351,6 +351,16 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
     // TODO (#1529): Call any validation function, and allow it to override.
   }
   this.setValue(id);
+};
+
+/**
+ * Overrides referencesVariables(), indicating this field refers to a variable.
+ * @return {boolean} True.
+ * @package
+ * @override
+ */
+Blockly.FieldVariable.prototype.referencesVariables = function() {
+  return true;
 };
 
 Blockly.Field.register('field_variable', Blockly.FieldVariable);

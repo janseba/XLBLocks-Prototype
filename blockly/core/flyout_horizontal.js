@@ -31,8 +31,7 @@ goog.require('Blockly.Events');
 goog.require('Blockly.FlyoutButton');
 goog.require('Blockly.Flyout');
 goog.require('Blockly.WorkspaceSvg');
-goog.require('goog.dom');
-goog.require('goog.events');
+
 goog.require('goog.math.Rect');
 goog.require('goog.userAgent');
 
@@ -126,7 +125,7 @@ Blockly.HorizontalFlyout.prototype.setMetrics_ = function(xyRatio) {
     return;
   }
 
-  if (goog.isNumber(xyRatio.x)) {
+  if (typeof xyRatio.x == 'number') {
     this.workspace_.scrollX = -metrics.contentWidth * xyRatio.x;
   }
 
@@ -261,7 +260,7 @@ Blockly.HorizontalFlyout.prototype.layout_ = function(contents, gaps) {
   for (var i = 0, item; item = contents[i]; i++) {
     if (item.type == 'block') {
       var block = item.block;
-      var allBlocks = block.getDescendants();
+      var allBlocks = block.getDescendants(false);
       for (var j = 0, child; child = allBlocks[j]; j++) {
         // Mark blocks as being inside a flyout.  This is used to detect and
         // prevent the closure of the flyout if the user right-clicks on such a

@@ -164,6 +164,11 @@ Blockly.Css.CONTENT = [
     'z-index: 50;', /* Display below toolbox, but above everything else. */
   '}',
 
+  '.blocklyBlockCanvas.blocklyCanvasTransitioning,',
+  '.blocklyBubbleCanvas.blocklyCanvasTransitioning {',
+    'transition: transform .5s;',
+  '}',
+
   '.blocklyTooltipDiv {',
     'background-color: #ffffc7;',
     'border: 1px solid #ddc;',
@@ -189,7 +194,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyResizeLine {',
-    'stroke: #888;',
+    'stroke: #515A5A;',
     'stroke-width: 1;',
   '}',
 
@@ -276,6 +281,22 @@ Blockly.Css.CONTENT = [
 
   '.blocklyDisabled>.blocklyPathLight,',
   '.blocklyDisabled>.blocklyPathDark {',
+    'display: none;',
+  '}',
+
+  '.blocklyInsertionMarker>.blocklyPath,',
+  '.blocklyInsertionMarker>.blocklyPathLight,',
+  '.blocklyInsertionMarker>.blocklyPathDark {',
+    'fill-opacity: .2;',
+    'stroke: none',
+  '}',
+
+  '.blocklyReplaceable .blocklyPath {',
+    'fill-opacity: 0.5;',
+  '}',
+
+  '.blocklyReplaceable .blocklyPathLight,',
+  '.blocklyReplaceable .blocklyPathDark {',
     'display: none;',
   '}',
 
@@ -383,15 +404,74 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
+  '.blocklyCommentForeignObject {',
+    'position: relative;',
+    'z-index: 0;',
+  '}',
+
+  '.blocklyCommentRect {',
+    'fill: #E7DE8E;',
+    'stroke: #bcA903;',
+    'stroke-width: 1px',
+  '}',
+
+  '.blocklyCommentTarget {',
+    'fill: transparent;',
+    'stroke: #bcA903;',
+  '}',
+
+  '.blocklyCommentTargetFocused {',
+    'fill: none;',
+  '}',
+
+  '.blocklyCommentHandleTarget {',
+    'fill: none;',
+  '}',
+
+  '.blocklyCommentHandleTargetFocused {',
+    'fill: transparent;',
+  '}',
+
+  '.blocklyFocused>.blocklyCommentRect {',
+    'fill: #B9B272;',
+    'stroke: #B9B272;',
+  '}',
+
+  '.blocklySelected>.blocklyCommentTarget {',
+    'stroke: #fc3;',
+    'stroke-width: 3px;',
+  '}',
+
+
   '.blocklyCommentTextarea {',
-    'background-color: #ffc;',
+    'background-color: #fef49c;',
     'border: 0;',
     'outline: 0;',
     'margin: 0;',
-    'padding: 2px;',
+    'padding: 3px;',
     'resize: none;',
     'display: block;',
     'overflow: hidden;',
+  '}',
+
+  '.blocklyCommentDeleteIcon {',
+    'cursor: pointer;',
+    'fill: #000;',
+    'display: none',
+  '}',
+
+  '.blocklySelected > .blocklyCommentDeleteIcon {',
+    'display: block',
+  '}',
+
+  '.blocklyDeleteIconShape {',
+    'fill: #000;',
+    'stroke: #000;',
+    'stroke-width: 1px;',
+  '}',
+
+  '.blocklyDeleteIconShape.blocklyDeleteIconHighlighted {',
+    'stroke: #fc3;',
   '}',
 
   '.blocklyHtmlInput {',
@@ -451,15 +531,15 @@ Blockly.Css.CONTENT = [
     'fill: #bbb;',
   '}',
 
-  '.blocklyZoom>image {',
+  '.blocklyZoom>image, .blocklyZoom>svg>image {',
     'opacity: .4;',
   '}',
 
-  '.blocklyZoom>image:hover {',
+  '.blocklyZoom>image:hover, .blocklyZoom>svg>image:hover {',
     'opacity: .6;',
   '}',
 
-  '.blocklyZoom>image:active {',
+  '.blocklyZoom>image:active, .blocklyZoom>svg>image:active {',
     'opacity: .8;',
   '}',
 
@@ -508,9 +588,6 @@ Blockly.Css.CONTENT = [
 
   '.blocklyDropdownMenu {',
     'padding: 0 !important;',
-    /* max-height value is same as the constant
-     * Blockly.FieldDropdown.MAX_MENU_HEIGHT defined in field_dropdown.js. */
-    'max-height: 300px !important;',
   '}',
 
   /* Override the default Closure URL. */
@@ -633,55 +710,28 @@ Blockly.Css.CONTENT = [
     'color: #fff;',
   '}',
 
-  /* Copied from: goog/css/colorpicker-simplegrid.css */
-  /*
-   * Copyright 2007 The Closure Library Authors. All Rights Reserved.
-   *
-   * Use of this source code is governed by the Apache License, Version 2.0.
-   * See the COPYING file for details.
-   */
-
-  /* Author: pupius@google.com (Daniel Pupius) */
-
-  /*
-    Styles to make the colorpicker look like the old gmail color picker
-    NOTE: without CSS scoping this will override styles defined in palette.css
-  */
-  '.blocklyWidgetDiv .goog-palette {',
-    'outline: none;',
-    'cursor: default;',
-  '}',
-
-  '.blocklyWidgetDiv .goog-palette-table {',
-    'border: 1px solid #666;',
+  /* Colour Picker Field */
+  '.blocklyColourTable {',
     'border-collapse: collapse;',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-cell {',
-    'height: 13px;',
-    'width: 15px;',
-    'margin: 0;',
-    'border: 0;',
-    'text-align: center;',
-    'vertical-align: middle;',
-    'border-right: 1px solid #666;',
-    'font-size: 1px;',
-  '}',
-
-  '.blocklyWidgetDiv .goog-palette-colorswatch {',
-    'position: relative;',
-    'height: 13px;',
-    'width: 15px;',
+  '.blocklyColourTable>tr>td {',
     'border: 1px solid #666;',
+    'padding: 0;',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-cell-hover .goog-palette-colorswatch {',
-    'border: 1px solid #FFF;',
+  '.blocklyColourTable>tr>td>div {',
+    'border: 1px solid #666;',
+    'height: 13px;',
+    'width: 15px;',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-cell-selected .goog-palette-colorswatch {',
-    'border: 1px solid #000;',
-    'color: #fff;',
+  '.blocklyColourTable>tr>td>div:hover {',
+    'border: 1px solid #fff;',
+  '}',
+
+  '.blocklyColourSelected, .blocklyColourSelected:hover {',
+    'border: 1px solid #000 !important;',
   '}',
 
   /* Copied from: goog/css/menu.css */
@@ -735,14 +785,14 @@ Blockly.Css.CONTENT = [
    * NOTE(mleibman,chrishenry):
    * The RTL support in Closure is provided via two mechanisms -- "rtl" CSS
    * classes and BiDi flipping done by the CSS compiler.  Closure supports RTL
-   * with or without the use of the CSS compiler.  In order for them not
-   * to conflict with each other, the "rtl" CSS classes need to have the #noflip
-   * annotation.  The non-rtl counterparts should ideally have them as well, but,
-   * since .goog-menuitem existed without .goog-menuitem-rtl for so long before
-   * being added, there is a risk of people having templates where they are not
-   * rendering the .goog-menuitem-rtl class when in RTL and instead rely solely
-   * on the BiDi flipping by the CSS compiler.  That's why we're not adding the
-   * #noflip to .goog-menuitem.
+   * with or without the use of the CSS compiler.  In order for them not to
+   * conflict with each other, the "rtl" CSS classes need to have the #noflip
+   * annotation.  The non-rtl counterparts should ideally have them as well,
+   * but, since .goog-menuitem existed without .goog-menuitem-rtl for so long
+   * before being added, there is a risk of people having templates where they
+   * are not rendering the .goog-menuitem-rtl class when in RTL and instead
+   * rely solely on the BiDi flipping by the CSS compiler.  That's why we're
+   * not adding the #noflip to .goog-menuitem.
    */
   '.blocklyWidgetDiv .goog-menuitem {',
     'color: #000;',
@@ -762,14 +812,15 @@ Blockly.Css.CONTENT = [
     'padding-right: 28px;',
   '}',
 
-  /* If a menu doesn't have checkable items or items with icons, remove padding. */
+  /* If a menu doesn't have checkable items or items with icons,
+   * remove padding.
+   */
   '.blocklyWidgetDiv .goog-menu-nocheckbox .goog-menuitem,',
   '.blocklyWidgetDiv .goog-menu-noicon .goog-menuitem {',
     'padding-left: 12px;',
   '}',
 
-  /*
-   * If a menu doesn't have items with shortcuts, leave just enough room for
+  /* If a menu doesn't have items with shortcuts, leave just enough room for
    * submenu arrows, if they are rendered.
    */
   '.blocklyWidgetDiv .goog-menu-noaccel .goog-menuitem {',
