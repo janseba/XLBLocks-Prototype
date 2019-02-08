@@ -11,7 +11,9 @@
 	// TODO2: Create the OK button handler
 	function sendStringToParentPage() {
 		var testString = localStorage.getItem("formulaID");
+		var xml = Blockly.Xml.workspaceToDom(workspace);
+		var xml_text = Blockly.Xml.domToText(xml);
 		console.log(testString);
-		Office.context.ui.messageParent(testString);
+		Office.context.ui.messageParent(xml_text);
 	}
 }());
