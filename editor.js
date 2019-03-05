@@ -35,5 +35,6 @@
 	function showCode() {
 		var code = Blockly.JavaScript.workspaceToCode(workspace);
 		document.getElementById("code").innerHTML = code;
+		Office.context.ui.messageParent(code);
 	}
 }());

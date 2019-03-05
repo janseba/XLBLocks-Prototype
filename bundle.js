@@ -69,8 +69,8 @@
 		function processMessage(arg) {
 			var messageFromDialog = arg.message;
 			console.log(messageFromDialog);
-			localStorage.setItem("BlocklyWorkspace", messageFromDialog);
-			document.getElementById("message").innerHTML = messageFromDialog;
+			// localStorage.setItem("BlocklyWorkspace", messageFromDialog)
+			// document.getElementById("message").innerHTML = messageFromDialog;
 			dialog.close();
 		}
 	})();
