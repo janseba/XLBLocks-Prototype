@@ -331,3 +331,113 @@ Blockly.JavaScript.getAdjusted = function(block, atId, opt_delta, opt_negate,
   }
   return at;
 };
+Blockly.JavaScript['sum'] = function(block) {
+  var sumParameters = Blockly.JavaScript.valueToCode(block, 'sum_parameters', Blockly.JavaScript.ORDER_ATOMIC);
+  var parameters = sumParameters.split(',');
+  var sumFormulas = new Array();
+  for (var index = 0; index < parameters.length; index++) {
+    sumFormulas[index] = 'SUM(' + parameters[index] + ')';
+  }
+  // TODO: Assemble JavaScript into code variable.
+  var code = sumFormulas.join();
+  return code;
+};
+Blockly.JavaScript['range'] = function(block) {
+  var text_range_address = block.getFieldValue('range_address');
+  // TODO: Assemble JavaScript into code variable.
+  var code = text_range_address
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+Blockly.JavaScript['for_each_row'] = function(block) {
+  var range = Blockly.JavaScript.valueToCode(block, 'range_each_row_in_range', Blockly.JavaScript.ORDER_NONE);
+  var rangeCorners = range.split(":");
+  var topLeft = rangeCorners[0];
+  var bottomRight = rangeCorners[1];
+  var topLeftRowColumn = topLeft.split(/([0-9]+)/);
+  var bottomRightRowColumn = bottomRight.split(/([0-9]+)/);
+  var noRows = bottomRightRowColumn[1] - topLeftRowColumn[1] + 1;
+  var ranges = new Array();
+  for (var row = 0; row < noRows; row++) {
+    ranges[row] = topLeftRowColumn[0] + (Number(topLeftRowColumn[1]) + row) + ":" 
+      + bottomRightRowColumn[0] + (Number(topLeftRowColumn[1]) + row)
+  }
+  var code = ranges.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+Blockly.JavaScript['formula'] = function(block) {
+  var text_formula_name = block.getFieldValue('formula_name');
+  var value_output = Blockly.JavaScript.valueToCode(block, 'output', Blockly.JavaScript.ORDER_ATOMIC);
+  var statements = Blockly.JavaScript.statementToCode(block, 'statements').trim();
+  var formula = new Object();
+  formula.formulaName = text_formula_name;
+  formula.statements = statements.split(',');
+
+  // Get array of output formulas
+  var noRows = getNoRows(value_output);
+  var noColumns = getNoColumns(value_output);
+  var rangeCorners = value_output.split(':');
+  var startRow = Number(rangeCorners[0].split(/([0-9]+)/)[1]);
+  var startColumn = getColumnNr(rangeCorners[0].split(/([0-9]+)/)[0]);
+  var cells = new Array();
+  var index = 0;
+  for (var column = startColumn; column < startColumn + noColumns ; column++) {
+    for (var row = startRow; row < startRow + noRows; row++) {
+      cells[index] = getColumnCode(column).toUpperCase() + row.toString();
+      index++;
+    }
+  }
+  formula.outputRange = cells;
+
+  // TODO: Assemble JavaScript into code variable.
+  var code = JSON.stringify(formula)
+  return code;
+};
+function getColumnNr(ref) {
+  var ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  var chars = ref.split('');
+  var columnNr = 0;
+  for (var j = 0; j < chars.length; j++) {
+    for (var i = 0; i < ALPHABET.length; i++) {
+      if (chars[j].toLowerCase()==ALPHABET[i]) {
+        columnNr = columnNr + (i + 1) * Math.pow(26,chars.length - (j + 1));
+        break;
+      }
+    }
+  }
+  return columnNr
+};
+
+function getColumnCode(cNr) {
+  var charset = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+  var code = new Array();
+  var stop = 0;
+  while (cNr > charset.length && stop < 10) {
+    cNr = cNr -1;
+    var r = cNr % charset.length;
+    cNr = cNr - r;
+    code.push(charset[r]);
+    cNr = cNr / charset.length;
+    stop++
+  }
+  code.push(charset[cNr - 1]);
+  code.reverse();
+  return code.join('');
+};
+
+function getNoRows(ref) {
+  var rangeCorners = ref.split(':');
+  var topLeftCell = rangeCorners[0].split(/([0-9]+)/);
+  var bottomRightCell = rangeCorners[1].split(/([0-9]+)/);
+  return bottomRightCell[1] - topLeftCell[1] + 1;
+}
+
+function getNoColumns(ref) {
+  var rangeCorners = ref.split(':');
+  var topLeftCell = rangeCorners[0].split(/([0-9]+)/);
+  var bottomRightCell = rangeCorners[1].split(/([0-9]+)/);
+  var startColumn = getColumnNr(topLeftCell[0]);
+  var endColumn = getColumnNr(bottomRightCell[0]);
+  return endColumn - startColumn + 1;
+}

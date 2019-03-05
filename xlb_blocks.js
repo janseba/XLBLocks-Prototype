@@ -3,11 +3,11 @@ Blockly.Blocks['formula'] = {
     this.appendDummyInput()
         .appendField("Formula")
         .appendField(new Blockly.FieldTextInput("formula name"), "formula_name");
-    this.appendValueInput("NAME")
+    this.appendValueInput("output")
         .setCheck(null)
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField("formula output");
-    this.appendStatementInput("NAME")
+    this.appendStatementInput("statements")
         .setCheck(null);
     this.setColour(20);
  this.setTooltip("");
@@ -30,7 +30,7 @@ Blockly.Blocks['definenamedranges'] = {
 Blockly.Blocks['range'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("range"), "NAME");
+        .appendField(new Blockly.FieldTextInput("range"), "range_address");
     this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(65);
@@ -43,7 +43,7 @@ Blockly.Blocks['sum'] = {
   init: function() {
     this.appendDummyInput()
         .appendField("SUM");
-    this.appendValueInput("NAME")
+    this.appendValueInput("sum_parameters")
         .setCheck(null);
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -56,7 +56,7 @@ Blockly.Blocks['sum'] = {
 
 Blockly.Blocks['for_each_row'] = {
   init: function() {
-    this.appendValueInput("NAME")
+    this.appendValueInput("range_each_row_in_range")
         .setCheck(null)
         .appendField("EACH ROW IN RANGE");
     this.setInputsInline(true);

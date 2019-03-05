@@ -13,11 +13,10 @@
 	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="editor.js"></script>
 	<script type="text/javascript" src="blockly/blockly_compressed.js"></script>
+	<script type="text/javascript" src="xlb_codeGenerator.js"></script>
 	<script type="text/javascript" src="blockly/blocks_compressed.js"></script>
 	<script type="text/javascript" src="xlb_blocks.js"></script>
 	<script type="text/javascript" src="blockly/msg/js/en.js"></script>
-	<script type="text/javascript" src="xlb_codeGenerator.js"></script>
-
 
 </head>
 <body style="display:flex;flex-direction:column;align-items:center;justify-content:center">
@@ -29,9 +28,15 @@
 		<button class="ms-Button" id="save-formulas">
 			Save Formulas
 		</button>
+		<button class="ms-Button" id="show-code">
+			Show Code
+		</button>
 		<button class="ms-Button" id="refresh-page">
 			Refresh Page
 		</button>
+	</div>
+	<div class="padding">
+		<p id="code"></p>
 	</div>
 	
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
@@ -41,7 +46,7 @@
   <category name="Cell References">
     <block type="for_each_row"></block>
     <block type="range">
-      <field name="NAME">range</field>
+      <field name="range_address">range</field>
     </block>
   </category>
   <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>

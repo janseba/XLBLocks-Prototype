@@ -5,7 +5,7 @@
   <category name="Cell References">
     <block type="for_each_row"></block>
     <block type="range">
-      <field name="NAME">range</field>
+      <field name="range_address">range</field>
     </block>
   </category>
   <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>
