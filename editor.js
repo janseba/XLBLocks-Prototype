@@ -25,7 +25,10 @@
 		//xml_text = "<xml xmlns=\"http://www.w3.org/1999/xhtml\">" + xml_text;
 		//xml_text = xml_text + "</xml>";
 		console.log("send: " + xml_text);
-		Office.context.ui.messageParent(xml_text);
+		var messageToTaskPane = new Object();
+		messageToTaskPane.Type = 'blockDefinition';
+		messageToTaskPane.MessageContent = xml_text;
+		Office.context.ui.messageParent(JSON.stringify(messageToTaskPane));
 	}
 
 	function refreshPage() {
@@ -35,6 +38,9 @@
 	function showCode() {
 		var code = Blockly.JavaScript.workspaceToCode(workspace);
 		document.getElementById("code").innerHTML = code;
-		Office.context.ui.messageParent(code);
+		var messageToTaskPane = new Object();
+		messageToTaskPane.Type = 'formula';
+		messageToTaskPane.MessageContent = code;
+		Office.context.ui.messageParent(JSON.stringify(messageToTaskPane));
 	}
 }());

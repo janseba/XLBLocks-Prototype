@@ -67,10 +67,15 @@
 			});
 		}
 		function processMessage(arg) {
-			var messageFromDialog = arg.message;
-			console.log(messageFromDialog);
-			// localStorage.setItem("BlocklyWorkspace", messageFromDialog)
-			// document.getElementById("message").innerHTML = messageFromDialog;
+			var messageFromDialog = JSON.parse(arg.message);
+			switch (messageFromDialog.Type) {
+				case 'formula':
+					console.log(messageFromDialog.Type);
+					break;
+				case 'blockDefinition':
+					localStorage.setItem("BlocklyWorkspace", messageFromDialog.MessageContent);
+					break;
+			}
 			dialog.close();
 		}
 	})();
