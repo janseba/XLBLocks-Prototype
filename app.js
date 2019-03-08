@@ -27,12 +27,31 @@
 			var messageFromDialog = JSON.parse(arg.message);
 			switch(messageFromDialog.Type) {
 				case 'formula':
-					console.log(messageFromDialog.Type)
+					updateFormulas(messageFromDialog.MessageContent);
 					break;
 				case 'blockDefinition':
 					localStorage.setItem("BlocklyWorkspace", messageFromDialog.MessageContent);
 					break;
 			}
 			dialog.close();
+		}
+		function updateFormulas(formulaDefString) {
+			Excel.run(function (context) {
+
+				var formula = JSON.parse(formulaDefString);
+				var sheet = context.workbook.worksheets.getActiveWorksheet();
+				var range = sheet.getRange(formula.outputRange);
+				//var data = [["=SUM(D5:G5)"],["=SUM(D6:G6)"]]
+				range.formulas = formula.statements;
+
+				return context.sync();
+
+			})
+			.catch(function (error) {
+				console.log("Error: " + error);
+				if (error instanceof OfficeExtension.Error) {
+					console.log("Debug info: " + JSON.stringify(error.debugInfo));
+				}
+			})
 		}
 })();

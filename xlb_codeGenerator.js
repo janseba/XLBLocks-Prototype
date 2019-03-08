@@ -373,9 +373,12 @@ Blockly.JavaScript['formula'] = function(block) {
   var formula = new Object();
   formula.formulaName = text_formula_name;
   formula.statements = statements.split(',');
+  for (var i = 0; i < formula.statements.length; i++) {
+    formula.statements[i]= ['='+formula.statements[i]];
+  }
 
   // Get array of output formulas
-  var noRows = getNoRows(value_output);
+  /*var noRows = getNoRows(value_output);
   var noColumns = getNoColumns(value_output);
   var rangeCorners = value_output.split(':');
   var startRow = Number(rangeCorners[0].split(/([0-9]+)/)[1]);
@@ -389,7 +392,9 @@ Blockly.JavaScript['formula'] = function(block) {
     }
   }
   formula.outputRange = cells;
+*/
 
+  formula.outputRange = value_output;
   // TODO: Assemble JavaScript into code variable.
   var code = JSON.stringify(formula)
   return code;
