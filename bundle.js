@@ -71,6 +71,9 @@
 			switch (messageFromDialog.Type) {
 				case 'formula':
 					updateFormulas(messageFromDialog.MessageContent);
+					var formula = JSON.parse(messageFromDialog.MessageContent);
+					var formulaID = getFormulaID(formula.blockDefinition);
+					console.log(formulaID);
 					break;
 				case 'blockDefinition':
 					localStorage.setItem("BlocklyWorkspace", messageFromDialog.MessageContent);
@@ -84,10 +87,39 @@
 				var formula = JSON.parse(formulaDefString);
 				var sheet = context.workbook.worksheets.getActiveWorksheet();
 				var range = sheet.getRange(formula.outputRange);
-				//var data = [["=SUM(D5:G5)"],["=SUM(D6:G6)"]]
 				range.formulas = formula.statements;
 
 				return context.sync();
+			}).catch(function (error) {
+				console.log("Error: " + error);
+				if (error instanceof OfficeExtension.Error) {
+					console.log("Debug info: " + JSON.stringify(error.debugInfo));
+				}
+			});
+		}
+		function getFormulaID(blockDefinition) {
+			var parser = new DOMParser();
+			var xmlDoc = parser.parseFromString(blockDefinition, 'text/xml');
+			var block = xmlDoc.getElementsByTagName('block');
+			for (var i = 0; i < block.length; i++) {
+				if (block[i].getAttribute('type') == 'formula') {
+					var id = block[i].getAttribute('id');
+					break;
+				}
+			}
+			return id;
+		}
+		function addName(id, value) {
+			Excel.run(function (context) {
+				var workbook = context.workbook;
+				var sheet = workbook.worksheets.getActiveWorksheet();
+				var range = sheet.getRange("A1:A5");
+
+				workbook.names.add("TestNaam", "gewoon een string");
+
+				return context.sync().then(function () {
+					console.log('test');
+				}).then(context.sync);
 			}).catch(function (error) {
 				console.log("Error: " + error);
 				if (error instanceof OfficeExtension.Error) {

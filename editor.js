@@ -36,8 +36,13 @@
 	}
 
 	function showCode() {
-		var code = Blockly.JavaScript.workspaceToCode(workspace);
-		document.getElementById("code").innerHTML = code;
+		var formulaBlocks = workspace.getBlocksByType('formula', false);
+		var code = Blockly.JavaScript.blockToCode(formulaBlocks[0]);
+		code = JSON.parse(code);
+		var workspaceXML = Blockly.Xml.workspaceToDom(workspace);
+		var workspaceString = Blockly.Xml.domToText(workspaceXML);
+		code.blockDefinition = workspaceString;
+		code = JSON.stringify(code);
 		var messageToTaskPane = new Object();
 		messageToTaskPane.Type = 'formula';
 		messageToTaskPane.MessageContent = code;
