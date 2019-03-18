@@ -73,6 +73,8 @@
 					updateFormulas(messageFromDialog.MessageContent);
 					var formula = JSON.parse(messageFromDialog.MessageContent);
 					var formulaID = getFormulaID(formula.blockDefinition);
+					formulaID = ascii_to_hex(formulaID);
+					addName(formulaID, formula.blockDefinition);
 					console.log(formulaID);
 					break;
 				case 'blockDefinition':
@@ -112,10 +114,8 @@
 		function addName(id, value) {
 			Excel.run(function (context) {
 				var workbook = context.workbook;
-				var sheet = workbook.worksheets.getActiveWorksheet();
-				var range = sheet.getRange("A1:A5");
 
-				workbook.names.add("TestNaam", "gewoon een string");
+				workbook.names.add(id, value);
 
 				return context.sync().then(function () {
 					console.log('test');
@@ -126,6 +126,23 @@
 					console.log("Debug info: " + JSON.stringify(error.debugInfo));
 				}
 			});
+		}
+		function hex_to_ascii(str1) {
+			var hex = str1.toString();
+			var str = '';
+			for (var n = 0; n < hex.length; n += 2) {
+				str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+			}
+			return str;
+		}
+
+		function ascii_to_hex(str) {
+			var arr1 = [];
+			for (var n = 0; n < str.length; n++) {
+				var hex = Number(str.charCodeAt(n)).toString(16);
+				arr1.push(hex);
+			}
+			return arr1.join('');
 		}
 	})();
 

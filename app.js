@@ -30,6 +30,8 @@
 					updateFormulas(messageFromDialog.MessageContent);
 					var formula = JSON.parse(messageFromDialog.MessageContent);
 					var formulaID = getFormulaID(formula.blockDefinition);
+					formulaID = ascii_to_hex(formulaID);
+					addName(formulaID, formula.blockDefinition);
 					console.log(formulaID);
 					break;
 				case 'blockDefinition':
@@ -71,10 +73,8 @@
 function addName(id,value) {
     Excel.run(function (context) {            
       var workbook = context.workbook;
-      var sheet = workbook.worksheets.getActiveWorksheet();
-      var range = sheet.getRange("A1:A5");
 
-      workbook.names.add("TestNaam", "gewoon een string");
+      workbook.names.add(id, value);
 
       return context.sync()
           .then(
