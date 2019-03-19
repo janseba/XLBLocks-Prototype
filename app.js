@@ -31,7 +31,7 @@
 					var formula = JSON.parse(messageFromDialog.MessageContent);
 					var formulaID = getFormulaID(formula.blockDefinition);
 					formulaID = ascii_to_hex(formulaID);
-					addName(formulaID, formula.blockDefinition);
+					addName('_' + formulaID, formula.blockDefinition);
 					console.log(formulaID);
 					break;
 				case 'blockDefinition':
