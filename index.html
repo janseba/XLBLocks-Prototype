@@ -8,9 +8,11 @@
 	<title>Blocly Prototype</title>
 
 	<script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/beta/hosted/office.debug.js"></script>
+	
 
 	<link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.min.css" />
 	<link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.components.css" />
+	<script type="text/javascript" src="node_modules/office-ui-fabric-js/dist/js/fabric.min.js"></script>
 	<link href="app.css" rel="stylesheet" type="text/css" />
 
 </head>
@@ -21,16 +23,35 @@
 		</div>
 	</div>
 	<div id="content-main">
+		<div class="ms-Dropdown" tabindex="0">
+			<label class="ms-Label">Dropdown label</label>
+			<i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+			<select class="ms-Dropdown-select" id="ddlFormulas">
+				<option>Choose a formula...</option>
+			</select>
+		</div>
+		<p id="message"></p>
 		<div class="padding">
 			<button class="ms-Button" id="start-editor">
 				Start Editor
 			</button>
+			<button class="ms-Button" id="edit">
+				Edit
+			</button>
+			<button class="ms-Button" id="refresh-page">
+				Refresh Page
+			</button>
 		</div>
-		<p id="message">Test</p>
 	</div>
 	<script type="text/javascript" src="node_modules/core-js/client/core.js"></script>
 	<script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="bundle.js"></script>
+<!-- 	<script type="text/javascript">
+		var DropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
+		for (var i = 0; i < DropdownHTMLElements.length; ++i) {
+			var Dropdown = new fabric['Dropdown'](DropdownHTMLElements[i]);
+		}
+	</script> -->
 
 </body>
 </html>

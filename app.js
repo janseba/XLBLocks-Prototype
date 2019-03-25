@@ -7,10 +7,24 @@
 				if(!Office.context.requirements.isSetSupported('ExcelApi', 1.7)) {
 					console.log('Sorry. The add-in uses Excel.js APIs that are not available in your version of Office');
 				}
-				$('#start-editor').click(startEditor)
-				console.log('onReady');
+				$('#start-editor').click(startEditor);
+				$('#refresh-page').click(refreshPage);
+				$('#edit').click(editFormula);
+				//$('#ddlFormulas').change(testOnChange);
+				updateFormulaList();
 			});
 		});
+
+		function editFormula() {
+			var ddlFormulas = document.getElementById('ddlFormulas');
+			var formulaID = ddlFormulas.options(ddlFormulas.selectedIndex).value;
+			var formulaText = ddlFormulas.options(ddlFormulas.selectedIndex).text;
+			console.log(formulaID + ' ' + formulaText);
+		}
+
+		function refreshPage() {
+			location.reload();
+		}
 
 		var dialog;
 		function startEditor() {
@@ -31,7 +45,7 @@
 					var formula = JSON.parse(messageFromDialog.MessageContent);
 					var formulaID = getFormulaID(formula.blockDefinition);
 					formulaID = ascii_to_hex(formulaID);
-					addName('_' + formulaID, formula.blockDefinition);
+					addName('_Block' + formulaID, formula.blockDefinition);
 					console.log(formulaID);
 					break;
 				case 'blockDefinition':
@@ -70,16 +84,33 @@
 		}
 		return id;
 	}
+	function getFormulaName(blockDefinition) {
+		var parser = new DOMParser();
+		var xmlDoc = parser.parseFromString(blockDefinition, 'text/xml');
+		var field = xmlDoc.getElementsByTagName('field');
+		for (var i = 0; i < field.length; i++) {
+			if (field[i].getAttribute('name') == 'formula_name') {
+				var name = field[i].innerText;
+				break;
+			}
+		}
+		return name;
+	}
 function addName(id,value) {
     Excel.run(function (context) {            
       var workbook = context.workbook;
+      const existingName = workbook.names.getItemOrNullObject(id);
+      existingName.load('name, formula');
 
-      workbook.names.add(id, value);
 
       return context.sync()
           .then(
               function() {
-              	console.log('test');
+              	if (existingName.isNullObject) {
+              		workbook.names.add(id, value);
+              	} else {
+              		existingName.formula = value;
+              	}
               }
           )
           .then(context.sync);
@@ -109,4 +140,39 @@ function ascii_to_hex(str) {
 	return arr1.join('');
 }
 
+function updateFormulaList() {
+	Excel.run(function (context) {            
+		
+		// code before sync
+		var names = context.workbook.names;
+
+		names.load('items/name, items/value');
+
+		return context.sync()
+		.then(function () {
+		
+			// code after sync
+			var list = document.createElement('ul');
+			var select = document.getElementById('ddlFormulas');
+			for (var i in names.items) {
+				var option = document.createElement('option');
+				var formulaName = getFormulaName(names.items[i].value);
+				var formulaID = getFormulaID(names.items[i].value);
+				option.text = formulaName;
+				option.value = formulaID;
+				select.add(option);
+			}
+			var DropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
+			for (var i = 0; i < DropdownHTMLElements.length; ++i) {
+				var Dropdown = new fabric['Dropdown'](DropdownHTMLElements[i]);
+			}
+		})
+	})
+	.catch(function (error) {
+		console.log("Error: " + error);
+		if (error instanceof OfficeExtension.Error) {
+			console.log("Debug info: " + JSON.stringify(error.debugInfo));
+		}
+	});
+}
 })();

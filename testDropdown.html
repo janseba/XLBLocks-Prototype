@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.min.css" />
+	<link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.components.min.css" />
+	<script src="node_modules/office-ui-fabric-js/dist/js/fabric.min.js"></script>
+</head>
+<body>
+	<div class="ms-Dropdown" tabindex="0">
+	  <label class="ms-Label">Dropdown label</label>
+	  <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+	  <select class="ms-Dropdown-select">
+	    <option>Choose a sound&amp;hellip;</option>
+	    <option>Dog barking</option>
+	    <option>Wind blowing</option>
+	    <option>Duck quacking</option>
+	    <option>Cow mooing</option>
+	  </select>
+	</div>
+	<script type="text/javascript">
+  		var DropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
+  		for (var i = 0; i < DropdownHTMLElements.length; ++i) {
+    		var Dropdown = new fabric['Dropdown'](DropdownHTMLElements[i]);
+  		}
+	</script>
+</body>
+</html>
