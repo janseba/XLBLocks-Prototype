@@ -7,13 +7,43 @@
 				if(!Office.context.requirements.isSetSupported('ExcelApi', 1.7)) {
 					console.log('Sorry. The add-in uses Excel.js APIs that are not available in your version of Office');
 				}
-				$('#start-editor').click(startEditor);
+				$('#update-formula').click(updateFormula);
 				$('#refresh-page').click(refreshPage);
 				$('#edit').click(editFormula);
+				$('#refresh-ddl').click(refreshDdl);
 				//$('#ddlFormulas').change(testOnChange);
-				updateFormulaList();
+				//updateFormulaList();			
 			});
 		});
+
+		function updateFormula() {
+			console.log('update formula');
+		}
+
+		function refreshDdl() {
+			
+			var select = document.getElementById('ddlFormulas');
+			for (var i = 0; i < 4; i++) {
+				var option = document.createElement('option');
+				option.text = 'omschrijving ' + i;
+				select.add(option);
+			}
+			var ddlDiv = document.getElementById('bjaTest');
+			var child = ddlDiv.querySelector('.ms-Dropdown-title');
+			if (child != null) {
+				ddlDiv.removeChild(child);
+			}
+			child = ddlDiv.querySelector('.ms-Dropdown-items');
+			if (child != null) {
+				ddlDiv.removeChild(child);
+			}
+			child = ddlDiv.querySelector('.ms-Dropdown-truncator');
+			if (child != null) {
+				ddlDiv.removeChild(child);
+			}
+			var DropdownHTMLElement = document.getElementById('bjaTest');
+			var Dropdown = new fabric['Dropdown'](DropdownHTMLElement);
+		}
 
 		function editFormula() {
 			var ddlFormulas = document.getElementById('ddlFormulas');
@@ -162,10 +192,11 @@ function updateFormulaList() {
 				option.value = formulaID;
 				select.add(option);
 			}
-			var DropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
+
+/*			var DropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
 			for (var i = 0; i < DropdownHTMLElements.length; ++i) {
 				var Dropdown = new fabric['Dropdown'](DropdownHTMLElements[i]);
-			}
+			}*/
 		})
 	})
 	.catch(function (error) {

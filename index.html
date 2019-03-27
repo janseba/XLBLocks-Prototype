@@ -14,26 +14,29 @@
 	<link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.components.css" />
 	<script type="text/javascript" src="node_modules/office-ui-fabric-js/dist/js/fabric.min.js"></script>
 	<link href="app.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="blockly/blockly_compressed.js"></script>
+	<script type="text/javascript" src="xlb_codeGenerator.js"></script>
+	<script type="text/javascript" src="blockly/blocks_compressed.js"></script>
+	<script type="text/javascript" src="xlb_blocks.js"></script>
+	<script type="text/javascript" src="blockly/msg/js/en.js"></script>
 
 </head>
 <body class="ms-font-m ms-welcome">
-	<div id="content-header">
+<!-- 	<div id="content-header">
 		<div class="padding">
-			<h1>Blockly</h1>
+			<h2>Blockly</h2>
 		</div>
-	</div>
+	</div> -->
 	<div id="content-main">
-		<div class="ms-Dropdown" tabindex="0">
+		<div class="ms-Dropdown" tabindex="0" id="bjaTest">
 			<label class="ms-Label">Dropdown label</label>
 			<i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
-			<select class="ms-Dropdown-select" id="ddlFormulas">
-				<option>Choose a formula...</option>
-			</select>
+			<select class="ms-Dropdown-select" id="ddlFormulas"></select>
 		</div>
 		<p id="message"></p>
 		<div class="padding">
-			<button class="ms-Button" id="start-editor">
-				Start Editor
+			<button class="ms-Button" id="update-formula">
+				Update
 			</button>
 			<button class="ms-Button" id="edit">
 				Edit
@@ -41,17 +44,60 @@
 			<button class="ms-Button" id="refresh-page">
 				Refresh Page
 			</button>
+			<button class="ms-Button" id ="refresh-ddl">
+				Init ddl
+			</button>
 		</div>
+		<div id="blocklyArea">BlocklyArea</div>
+		<div id="blocklyDiv" style="position: absolute"></div>
 	</div>
 	<script type="text/javascript" src="node_modules/core-js/client/core.js"></script>
 	<script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="bundle.js"></script>
-<!-- 	<script type="text/javascript">
-		var DropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
-		for (var i = 0; i < DropdownHTMLElements.length; ++i) {
-			var Dropdown = new fabric['Dropdown'](DropdownHTMLElements[i]);
-		}
-	</script> -->
 
-</body>
+	<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+	  <category name="Functions">
+	    <block type="sum"></block>
+	  </category>
+	  <category name="Cell References">
+	    <block type="for_each_row"></block>
+	    <block type="range">
+	      <field name="range_address">range</field>
+	    </block>
+	  </category>
+	  <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>
+	  <category name="Workbook Management">
+	    <block type="definenamedranges"></block>
+	    <block type="formula">
+	      <field name="formula_name">formula name</field>
+	    </block>
+	  </category>
+	</xml>
+
+<!-- 	<script >
+		var blocklyArea = document.getElementById('blocklyArea');
+		var blocklyDiv = document.getElementById('blocklyDiv');
+		var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox'), maxInstances: {formula: 1}, horizontalLayout: true, zoom: {startScale: 0.7}});
+		var onresize = function(e) {
+		    // Compute the absolute coordinates and dimensions of blocklyArea.
+		    var element = blocklyArea;
+		    var x = 0;
+		    var y = 0;
+		    do {
+		      x += element.offsetLeft;
+		      y += element.offsetTop;
+		      element = element.offsetParent;
+		    } while (element);
+		    // Position blocklyDiv over blocklyArea.
+		    blocklyDiv.style.left = x + 'px';
+		    blocklyDiv.style.top = y + 'px';
+		    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+		    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+		    Blockly.svgResize(workspace);
+		  };
+		  window.addEventListener('resize', onresize, false);
+		  onresize();
+		  Blockly.svgResize(workspace);		
+	</script>
+ --></body>
 </html>
