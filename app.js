@@ -32,10 +32,11 @@
 				.then(function () {
 				
 				// code after sync
-				if (!sheetExists(sheets.items, 'XLBlocks')) {
-					sheets.add('XLBlocks');
+				if (sheetExists(sheets.items, 'XLBlocks')) {
+					var sht = sheets.getItem('XLBlocks');
+					sht.delete();
 				} 
-		
+					sheets.add('XLBlocks');
 				})
 				.then(context.sync);
 			})
