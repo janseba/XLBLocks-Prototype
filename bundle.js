@@ -67,29 +67,6 @@
 			saveFormulaDefinition();
 		}
 
-		function saveFormulaDefinition() {
-			Excel.run(function (context) {
-
-				// code before sync
-				var sheets = context.workbook.worksheets;
-				sheets.load('items/name');
-
-				return context.sync().then(function () {
-
-					// code after sync
-					if (sheetExists(sheets.items, 'XLBlocks')) {
-						var sht = sheets.getItem('XLBlocks');
-						sht.delete();
-					}
-					sheets.add('XLBlocks');
-				}).then(context.sync);
-			}).catch(function (error) {
-				console.log("Error: " + error);
-				if (error instanceof OfficeExtension.Error) {
-					console.log("Debug info: " + JSON.stringify(error.debugInfo));
-				}
-			});
-		}
 		function sheetExists(sheets, name) {
 			var result = false;
 			for (var i = 0; i < sheets.length; i++) {
