@@ -44,8 +44,7 @@ function saveFormulaDefinition() {
 			var sht = sheets.add('XLBlocks');
 			var rng = sht.getRange('A1:C' + xlValues.length)
 			rng.values = xlValues;
-			var ids = getCol(xlValues, 0);
-			console.log(ws.name);
+			sht.visibility = Excel.SheetVisibility.hidden;
 		})
 	})
 	.catch(function (error) {
@@ -86,17 +85,6 @@ function getFormulaName(xml) {
 		}
 	}
 	return name;
-}
-
-function existsInArray(arr, col, key) {
-	var result = false;
-	for (var i = 0; i < arr.length; i++) {
-		if(arr[i][col] === key) {
-			result = true;
-			break;
-		}
-	}
-	return result;
 }
 
 function getCol(matrix, col) {
