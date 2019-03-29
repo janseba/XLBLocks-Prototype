@@ -29,10 +29,22 @@ function saveFormulaDefinition() {
 			if (typeof rngDefinitions === 'undefined') {
 				var xlValues = [];
 			} else {
-				var xlValues = rngDefinitions.values;
+				var xlValues = rngDefinitions.values
+				xlValues.shift();
 			}
-			xlValues.push([ws.id, ws.name, ws.fullXML]);
+			var ids = getCol(xlValues,0)
+			var index = ids.findIndex(function(id){return id === this},ws.id);
+			if ( index === -1) {
+				xlValues.push([ws.id, ws.name, ws.fullXML]);
+			} else {
+				xlValues[index][1] = ws.name;
+				xlValues[index][2] = ws.fullXML;
+			}
 			xlValues.unshift(['ID', 'Name', 'XML'])
+			var sht = sheets.add('XLBlocks');
+			var rng = sht.getRange('A1:C' + xlValues.length)
+			rng.values = xlValues;
+			var ids = getCol(xlValues, 0);
 			console.log(ws.name);
 		})
 	})
@@ -65,13 +77,32 @@ function getFormulaID(xml) {
 	}
 	return id;
 }
-	function getFormulaName(xml) {
-		var field = xml.getElementsByTagName('field');
-		for (var i = 0; i < field.length; i++) {
-			if (field[i].getAttribute('name') == 'formula_name') {
-				var name = field[i].innerText;
-				break;
-			}
+function getFormulaName(xml) {
+	var field = xml.getElementsByTagName('field');
+	for (var i = 0; i < field.length; i++) {
+		if (field[i].getAttribute('name') == 'formula_name') {
+			var name = field[i].innerText;
+			break;
 		}
-		return name;
 	}
+	return name;
+}
+
+function existsInArray(arr, col, key) {
+	var result = false;
+	for (var i = 0; i < arr.length; i++) {
+		if(arr[i][col] === key) {
+			result = true;
+			break;
+		}
+	}
+	return result;
+}
+
+function getCol(matrix, col) {
+	var column = [];
+	for (var i = 0; i < matrix.length; i++) {
+		column.push(matrix[i][col]);
+	}
+	return column
+}
