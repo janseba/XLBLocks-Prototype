@@ -55,6 +55,72 @@ function saveFormulaDefinition() {
 	});
 }
 
+function refreshDdl() {
+	Excel.run(function (context) {            
+		var sheets = context.workbook.worksheets;
+		sheets.load('items/name');
+
+		return context.sync()
+		.then(function () {
+			if (sheetExists(sheets.items, 'XLBlocks')) {
+				var xlBlockSht = sheets.getItem('XLBlocks');
+				var definitionsRng = xlBlockSht.getUsedRange();
+				definitionsRng.load('values');
+				return definitionsRng
+			}
+			return null
+		})
+		.then(context.sync)
+		.then(function (definitionsRng) {
+			if (definitionsRng !== null) {
+				var definitionValues = definitionsRng.values;
+			} else {
+				var definitionValues = null;
+			}
+			replaceFormulasInDdl(definitionValues);
+		})
+	})
+	.catch(function (error) {
+		console.log("Error: " + error);
+		if (error instanceof OfficeExtension.Error) {
+			console.log("Debug info: " + JSON.stringify(error.debugInfo));
+		}
+	});
+}
+
+function replaceFormulasInDdl(formulas) {
+	var select = document.getElementById('ddlFormulas');
+	select.options.length = 0;
+	if (formulas !== null) { 
+		for (var i = 1; i < formulas.length; i++) {
+			var option = document.createElement('option');
+			option.text = formulas[i][1]
+			option.value = formulas[i][0]
+			select.add(option);
+		}
+	}
+	buildFormulaDdl();	
+}
+
+function buildFormulaDdl(formulas) {
+	
+	var ddlDiv = document.getElementById('bjaTest');
+	var child = ddlDiv.querySelector('.ms-Dropdown-title');
+	if (child != null) {
+		ddlDiv.removeChild(child);
+	}
+	child = ddlDiv.querySelector('.ms-Dropdown-items');
+	if (child != null) {
+		ddlDiv.removeChild(child);
+	}
+	child = ddlDiv.querySelector('.ms-Dropdown-truncator');
+	if (child != null) {
+		ddlDiv.removeChild(child);
+	}
+	var DropdownHTMLElement = document.getElementById('bjaTest');
+	var Dropdown = new fabric['Dropdown'](DropdownHTMLElement);
+}
+
 function sheetExists(sheets, name) {
 	var result = false;
 	for (var i = 0; i < sheets.length; i++) {

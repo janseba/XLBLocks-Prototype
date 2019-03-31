@@ -11,8 +11,7 @@
 				$('#refresh-page').click(refreshPage);
 				$('#edit').click(editFormula);
 				$('#refresh-ddl').click(refreshDdl);
-				//$('#ddlFormulas').change(testOnChange);
-				//updateFormulaList();			
+				refreshDdl();		
 			});
 		});
 
@@ -31,31 +30,6 @@
 				}
 			}
 			return result;
-		}
-
-		function refreshDdl() {
-			
-			var select = document.getElementById('ddlFormulas');
-			for (var i = 0; i < 4; i++) {
-				var option = document.createElement('option');
-				option.text = 'omschrijving ' + i;
-				select.add(option);
-			}
-			var ddlDiv = document.getElementById('bjaTest');
-			var child = ddlDiv.querySelector('.ms-Dropdown-title');
-			if (child != null) {
-				ddlDiv.removeChild(child);
-			}
-			child = ddlDiv.querySelector('.ms-Dropdown-items');
-			if (child != null) {
-				ddlDiv.removeChild(child);
-			}
-			child = ddlDiv.querySelector('.ms-Dropdown-truncator');
-			if (child != null) {
-				ddlDiv.removeChild(child);
-			}
-			var DropdownHTMLElement = document.getElementById('bjaTest');
-			var Dropdown = new fabric['Dropdown'](DropdownHTMLElement);
 		}
 
 		function editFormula() {
@@ -86,7 +60,7 @@
 				case 'formula':
 					updateFormulas(messageFromDialog.MessageContent);
 					var formula = JSON.parse(messageFromDialog.MessageContent);
-					var formulaID = getFormulaID(formula.blockDefinition);
+					// var formulaID = getFormulaID(formula.blockDefinition);
 					formulaID = ascii_to_hex(formulaID);
 					addName('_Block' + formulaID, formula.blockDefinition);
 					console.log(formulaID);
@@ -199,8 +173,8 @@ function updateFormulaList() {
 			var select = document.getElementById('ddlFormulas');
 			for (var i in names.items) {
 				var option = document.createElement('option');
-				var formulaName = getFormulaName(names.items[i].value);
-				var formulaID = getFormulaID(names.items[i].value);
+				// var formulaName = getFormulaName(names.items[i].value);
+				// var formulaID = getFormulaID(names.items[i].value);
 				option.text = formulaName;
 				option.value = formulaID;
 				select.add(option);
