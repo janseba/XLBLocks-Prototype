@@ -55,7 +55,7 @@ function saveFormulaDefinition() {
 	});
 }
 
-function refreshDdl() {
+function getXLBlockList(callback) {
 	Excel.run(function (context) {            
 		var sheets = context.workbook.worksheets;
 		sheets.load('items/name');
@@ -77,7 +77,7 @@ function refreshDdl() {
 			} else {
 				var definitionValues = null;
 			}
-			replaceFormulasInDdl(definitionValues);
+			callback(definitionValues);
 		})
 	})
 	.catch(function (error) {
@@ -88,7 +88,7 @@ function refreshDdl() {
 	});
 }
 
-function replaceFormulasInDdl(formulas) {
+function replaceFormulaDdl(formulas) {
 	var select = document.getElementById('ddlFormulas');
 	select.options.length = 0;
 	if (formulas !== null) { 
@@ -159,4 +159,18 @@ function getCol(matrix, col) {
 		column.push(matrix[i][col]);
 	}
 	return column
+}
+
+function editFormula(formulas) {
+	getXLBlockList(testFormula);
+}
+function testFormula(formulas) {
+	var ddlFormulas = document.getElementById('ddlFormulas');
+	var selectedFormulaID = ddlFormulas.options(ddlFormulas.selectedIndex).value;
+	var ids = getCol(formulas,0)
+	var selectedIndex = ids.findIndex(function(id){return id === this},selectedFormulaID)
+	workspace.clear();
+	var xml_text = formulas[selectedIndex][2];
+	var xml = Blockly.Xml.textToDom(xml_text);
+	Blockly.Xml.domToWorkspace(xml, workspace);
 }

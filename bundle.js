@@ -56,8 +56,8 @@
 				$('#update-formula').click(updateFormula);
 				$('#refresh-page').click(refreshPage);
 				$('#edit').click(editFormula);
-				$('#refresh-ddl').click(refreshDdl);
-				refreshDdl();
+				$('#refresh-ddl').click(replaceFormulaDdl);
+				getXLBlockList(replaceFormulaDdl);
 			});
 		});
 
@@ -75,13 +75,6 @@
 				}
 			}
 			return result;
-		}
-
-		function editFormula() {
-			var ddlFormulas = document.getElementById('ddlFormulas');
-			var formulaID = ddlFormulas.options(ddlFormulas.selectedIndex).value;
-			var formulaText = ddlFormulas.options(ddlFormulas.selectedIndex).text;
-			console.log(formulaID + ' ' + formulaText);
 		}
 
 		function refreshPage() {
