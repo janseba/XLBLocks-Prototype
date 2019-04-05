@@ -7,9 +7,9 @@
 					console.log('Sorry. The add-in uses Excel.js APIs that are not available in your version of Office');
 				}
 				OfficeExtension.config.extendedErrorLoggin = true;
-				$('#update-formula').click(updateFormula);
+				$('#validateFormula').click(updateFormula);
 				$('#refresh-page').click(refreshPage);
-				$('#edit').click(editFormula);
+				$('#changeFormula').click(editFormula);
 				//$('#refresh-ddl').click(testDDL);
 				getXLBlockList(replaceFormulaDdl);		
 			});
@@ -18,7 +18,7 @@
 	function updateFormula() {
 		saveFormulaDefinition();
 	}
-	
+
 	function editFormula(formulas) {
 		getXLBlockList(initWorkspace);
 	}

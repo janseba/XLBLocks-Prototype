@@ -143,3 +143,11 @@ function initWorkspace(formulas) {
 	var xml = Blockly.Xml.textToDom(xml_text);
 	Blockly.Xml.domToWorkspace(xml, workspace);
 }
+
+function showBlockly() {
+	var blocklyDiv = document.getElementById('blocklyDiv');
+	if (blocklyDiv.style.display === "none") {blocklyDiv.style.display = "block"};
+	var resizeEvent = window.document.createEvent('UIEvents');
+	resizeEvent .initUIEvent('resize', true, false, window, 0);
+	window.dispatchEvent(resizeEvent);
+}

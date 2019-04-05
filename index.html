@@ -27,30 +27,28 @@
 			<h2>Blockly</h2>
 		</div>
 	</div> -->
-	<div id="content-main">
-		<div class="ms-Dropdown" tabindex="0" id="formulaDiv">
-			<label class="ms-Label">Dropdown label</label>
-			<i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
-			<select class="ms-Dropdown-select" id="ddlFormulas"></select>
+	<div class="outer" id="content-main">
+		<div class="menu">
+			<div class="ms-Dropdown" tabindex="0" id="formulaDiv" style="z-index: 1;">
+				<i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+				<select class="ms-Dropdown-select" id="ddlFormulas"></select>
+			</div>
+			<button class="ms-Button ms-Button--hero" id="newFormula">
+				<span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Add" aria-hidden="true"></i></span>
+			</button>
+			<button class="ms-Button ms-Button--hero" id="changeFormula">
+				<span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Edit" aria-hidden="true"></i></span>
+			</button>
+			<button class="ms-Button ms-Button--hero" id="validateFormula">
+				<span class="ms-Button-icon"><i class="ms-Icon ms-Icon--CheckMark" aria-hidden="true"></i></span>
+			</button>
+<!-- 			<button class="ms-Button ms-Button--hero" id="testUI">
+				<span class="ms-Button-icon"><i class="ms-Icon ms-Icon--TestCase" aria-hidden="true"></i></span>
+			</button> -->
 		</div>
-		<p id="message"></p>
-		<div class="padding">
-			<button class="ms-Button" id="update-formula">
-				Update
-			</button>
-			<button class="ms-Button" id="edit">
-				Edit
-			</button>
-			<button class="ms-Button" id="refresh-page">
-				Refresh Page
-			</button>
-			<button class="ms-Button" id ="refresh-ddl">
-				Init ddl
-			</button>
-		</div>
-		<div id="blocklyArea">BlocklyArea</div>
-		<div id="blocklyDiv" style="position: absolute"></div>
-	</div>
+		<div class="blocklyFrame" id="blocklyArea"></div>
+ 	</div>
+ 	<div id="blocklyDiv" style="position: absolute; z-index: 0;"></div>
 	<script type="text/javascript" src="node_modules/core-js/client/core.js"></script>
 	<script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
  	<script type="text/javascript" src="xlb_functions.js"></script>
@@ -74,32 +72,48 @@
 	    </block>
 	  </category>
 	</xml>
-
-	<script>buildFormulaDdl()</script>
-	<script >
-		var blocklyArea = document.getElementById('blocklyArea');
+<script type="text/javascript">
+	var newFormulaIcon = document.getElementById('newFormula')
+	newFormulaIcon.addEventListener("click", function() {
+		console.log('new formula icon');
+		showBlockly();
+	})
+</script>
+<script type="text/javascript">
+	var newFormulaIcon = document.getElementById('testUI')
+	newFormulaIcon.addEventListener("click", function() {
+		console.log('test UI');
 		var blocklyDiv = document.getElementById('blocklyDiv');
-		var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox'), maxInstances: {formula: 1}, horizontalLayout: true, zoom: {startScale: 0.7}});
-		var onresize = function(e) {
-		    // Compute the absolute coordinates and dimensions of blocklyArea.
-		    var element = blocklyArea;
-		    var x = 0;
-		    var y = 0;
-		    do {
-		      x += element.offsetLeft;
-		      y += element.offsetTop;
-		      element = element.offsetParent;
-		    } while (element);
-		    // Position blocklyDiv over blocklyArea.
-		    blocklyDiv.style.left = x + 'px';
-		    blocklyDiv.style.top = y + 'px';
-		    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-		    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
-		    Blockly.svgResize(workspace);
-		  };
-		  window.addEventListener('resize', onresize, false);
-		  onresize();
-		  Blockly.svgResize(workspace);		
-	</script>
+		blocklyDiv.style.display = "none"
+	})
+</script>	
+<script>
+		buildFormulaDdl();
+		
+</script>	
+<script >
+	var blocklyArea = document.getElementById('blocklyArea');
+	var blocklyDiv = document.getElementById('blocklyDiv');
+	var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox'), maxInstances: {formula: 1}, horizontalLayout: true, zoom: {startScale: 0.7}});
+	var onresize = function(e) {
+		var element = blocklyArea;
+		var x = 0;
+		var y = 0;
+		do {
+			x += element.offsetLeft;
+			y += element.offsetTop;
+			element = element.offsetParent;
+		} while (element);
+		blocklyDiv.style.left = x + 'px';
+		blocklyDiv.style.top = y + 'px';
+		blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+		blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+		Blockly.svgResize(workspace);
+	};
+	window.addEventListener('resize', onresize, false);
+	onresize();
+	Blockly.svgResize(workspace);
+	blocklyDiv.style.display = "none";
+</script>
 </body>
 </html>
