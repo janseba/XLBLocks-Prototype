@@ -44,7 +44,9 @@ function saveFormulaDefinition() {
 			var sht = sheets.add('XLBlocks');
 			var rng = sht.getRange('A1:C' + xlValues.length)
 			rng.values = xlValues;
+			replaceFormulaDdl(xlValues);
 			sht.visibility = Excel.SheetVisibility.hidden;
+			workspace.clear();
 		})
 	})
 	.catch(function (error) {
@@ -55,38 +57,7 @@ function saveFormulaDefinition() {
 	});
 }
 
-function getXLBlockList(callback) {
-	Excel.run(function (context) {            
-		var sheets = context.workbook.worksheets;
-		sheets.load('items/name');
 
-		return context.sync()
-		.then(function () {
-			if (sheetExists(sheets.items, 'XLBlocks')) {
-				var xlBlockSht = sheets.getItem('XLBlocks');
-				var definitionsRng = xlBlockSht.getUsedRange();
-				definitionsRng.load('values');
-				return definitionsRng
-			}
-			return null
-		})
-		.then(context.sync)
-		.then(function (definitionsRng) {
-			if (definitionsRng !== null) {
-				var definitionValues = definitionsRng.values;
-			} else {
-				var definitionValues = null;
-			}
-			callback(definitionValues);
-		})
-	})
-	.catch(function (error) {
-		console.log("Error: " + error);
-		if (error instanceof OfficeExtension.Error) {
-			console.log("Debug info: " + JSON.stringify(error.debugInfo));
-		}
-	});
-}
 
 function replaceFormulaDdl(formulas) {
 	var select = document.getElementById('ddlFormulas');
@@ -102,9 +73,9 @@ function replaceFormulaDdl(formulas) {
 	buildFormulaDdl();	
 }
 
-function buildFormulaDdl(formulas) {
+function buildFormulaDdl() {
 	
-	var ddlDiv = document.getElementById('bjaTest');
+	var ddlDiv = document.getElementById('formulaDiv');
 	var child = ddlDiv.querySelector('.ms-Dropdown-title');
 	if (child != null) {
 		ddlDiv.removeChild(child);
@@ -117,7 +88,7 @@ function buildFormulaDdl(formulas) {
 	if (child != null) {
 		ddlDiv.removeChild(child);
 	}
-	var DropdownHTMLElement = document.getElementById('bjaTest');
+	var DropdownHTMLElement = document.getElementById('formulaDiv');
 	var Dropdown = new fabric['Dropdown'](DropdownHTMLElement);
 }
 
@@ -161,10 +132,8 @@ function getCol(matrix, col) {
 	return column
 }
 
-function editFormula(formulas) {
-	getXLBlockList(testFormula);
-}
-function testFormula(formulas) {
+
+function initWorkspace(formulas) {
 	var ddlFormulas = document.getElementById('ddlFormulas');
 	var selectedFormulaID = ddlFormulas.options(ddlFormulas.selectedIndex).value;
 	var ids = getCol(formulas,0)

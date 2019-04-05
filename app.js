@@ -1,23 +1,58 @@
 'use strict';
-(function () {
-
+(function () {  
 	Office.onReady()
 		.then(function() {
 			$(document).ready(function () {
 				if(!Office.context.requirements.isSetSupported('ExcelApi', 1.7)) {
 					console.log('Sorry. The add-in uses Excel.js APIs that are not available in your version of Office');
 				}
+				OfficeExtension.config.extendedErrorLoggin = true;
 				$('#update-formula').click(updateFormula);
 				$('#refresh-page').click(refreshPage);
 				$('#edit').click(editFormula);
-				$('#refresh-ddl').click(replaceFormulaDdl);
+				//$('#refresh-ddl').click(testDDL);
 				getXLBlockList(replaceFormulaDdl);		
 			});
 		});
 
 		function updateFormula() {
-			console.log('update formula');
 			saveFormulaDefinition();
+		}
+		function editFormula(formulas) {
+			getXLBlockList(initWorkspace);
+		}
+		function getXLBlockList(callback) {
+			Excel.run(function (context) {
+				          
+				var sheets = context.workbook.worksheets;
+				sheets.load('items/name');
+
+				return context.sync()
+				.then(function () {
+					if (sheetExists(sheets.items, 'XLBlocks')) {
+						var xlBlockSht = sheets.getItem('XLBlocks');
+						var definitionsRng = xlBlockSht.getRange('A1:C5');
+						definitionsRng.load('values');
+						return definitionsRng
+					}
+					return null
+				})
+				.then(context.sync)
+				.then(function (definitionsRng) {
+					if (definitionsRng !== null) {
+						var definitionValues = definitionsRng.values;
+					} else {
+						var definitionValues = null;
+					}
+					callback(definitionValues);
+				})
+			})
+			.catch(function (error) {
+				console.log("Error: " + error);
+				if (error instanceof OfficeExtension.Error) {
+					console.log("Debug info: " + JSON.stringify(error.debugInfo));
+				}
+			});
 		}
 
 
