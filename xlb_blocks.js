@@ -66,3 +66,37 @@ Blockly.Blocks['for_each_row'] = {
  this.setHelpUrl("");
   }
 };
+
+Blockly.Blocks['for_each_column'] = {
+  init: function() {
+    this.appendValueInput("range_each_column_in_range")
+        .setCheck(null)
+        .appendField("EACH COLUMN IN RANGE");
+    this.setInputsInline(true);
+    this.setOutput(true, null);
+    this.setColour(65);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['lookup'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("LOOKUP");
+    this.appendValueInput("lookupValue")
+        .setCheck(null)
+        .appendField("lookup value");
+    this.appendValueInput("lookupColumn")
+        .setCheck(null)
+        .appendField("lookup column");
+    this.appendValueInput("resultColumn")
+        .setCheck(null)
+        .appendField("result column");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+ this.setTooltip("This functions returns a value from the result column at the same row it finds a match in the lookup column");
+ this.setHelpUrl("");
+  }
+};

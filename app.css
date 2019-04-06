@@ -27,5 +27,8 @@ html, body{
 .padding {
     padding: 15px;
 }
+.ms-Button {
+    min-width: 40px;
+}
 
 

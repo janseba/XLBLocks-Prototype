@@ -1,0 +1,20 @@
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="Functions">
+    <block type="sum"></block>
+    <block type="lookup"></block>
+  </category>
+  <category name="Cell References">
+    <block type="for_each_row"></block>
+    <block type="for_each_column"></block>
+    <block type="range">
+      <field name="range_address">range</field>
+    </block>
+  </category>
+  <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>
+  <category name="Workbook Management">
+    <block type="definenamedranges"></block>
+    <block type="formula">
+      <field name="formula_name">formula name</field>
+    </block>
+  </category>
+</xml>

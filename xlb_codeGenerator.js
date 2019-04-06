@@ -366,35 +366,43 @@ Blockly.JavaScript['for_each_row'] = function(block) {
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
+Blockly.JavaScript['for_each_column'] = function(block) {
+  var range = Blockly.JavaScript.valueToCode(block, 'range_each_column_in_range', Blockly.JavaScript.ORDER_NONE);
+  var rangeCorners = range.split(":");
+  var topLeft = rangeCorners[0];
+  var bottomRight = rangeCorners[1];
+  var topLeftRowColumn = topLeft.split(/([0-9]+)/);
+  var bottomRightRowColumn = bottomRight.split(/([0-9]+)/);
+  var noColumns = getNoColumns(range);
+  var startColNr = getColumnNr(topLeftRowColumn[0])
+  var ranges = new Array();
+  for (var col = 0; col < noColumns; col++) {
+    ranges[col] = getColumnCode(startColNr + col) + topLeftRowColumn[1] + ":" 
+      + getColumnCode(startColNr + col) + bottomRightRowColumn[1]
+  }
+  var code = ranges.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
 Blockly.JavaScript['formula'] = function(block) {
   var text_formula_name = block.getFieldValue('formula_name');
-  var value_output = Blockly.JavaScript.valueToCode(block, 'output', Blockly.JavaScript.ORDER_ATOMIC);
+  var outputRange = Blockly.JavaScript.valueToCode(block, 'output', Blockly.JavaScript.ORDER_ATOMIC);
+  var noRows = getNoRows(outputRange);
+  var noColumns = getNoColumns(outputRange);
   var statements = Blockly.JavaScript.statementToCode(block, 'statements').trim();
   var formula = new Object();
   formula.formulaName = text_formula_name;
-  formula.statements = statements.split(',');
-  for (var i = 0; i < formula.statements.length; i++) {
-    formula.statements[i]= ['='+formula.statements[i]];
-  }
-
-  // Get array of output formulas
-  /*var noRows = getNoRows(value_output);
-  var noColumns = getNoColumns(value_output);
-  var rangeCorners = value_output.split(':');
-  var startRow = Number(rangeCorners[0].split(/([0-9]+)/)[1]);
-  var startColumn = getColumnNr(rangeCorners[0].split(/([0-9]+)/)[0]);
-  var cells = new Array();
-  var index = 0;
-  for (var column = startColumn; column < startColumn + noColumns ; column++) {
-    for (var row = startRow; row < startRow + noRows; row++) {
-      cells[index] = getColumnCode(column).toUpperCase() + row.toString();
-      index++;
+  statements = statements.split(',');
+  formula.statements = [];
+  for (var i = 0; i < noRows; i++) {
+    var newRow = []
+    for (var j = 0; j < noColumns; j++) {
+      newRow.push('=' + statements[i * noColumns + j]); 
     }
+    formula.statements.push(newRow);
   }
-  formula.outputRange = cells;
-*/
 
-  formula.outputRange = value_output;
+  formula.outputRange = outputRange;
   // TODO: Assemble JavaScript into code variable.
   var code = JSON.stringify(formula)
   return code;
@@ -432,17 +440,25 @@ function getColumnCode(cNr) {
 };
 
 function getNoRows(ref) {
-  var rangeCorners = ref.split(':');
-  var topLeftCell = rangeCorners[0].split(/([0-9]+)/);
-  var bottomRightCell = rangeCorners[1].split(/([0-9]+)/);
-  return bottomRightCell[1] - topLeftCell[1] + 1;
+  if (ref.includes(':')) {
+    var rangeCorners = ref.split(':');
+    var topLeftCell = rangeCorners[0].split(/([0-9]+)/);
+    var bottomRightCell = rangeCorners[1].split(/([0-9]+)/);
+    return bottomRightCell[1] - topLeftCell[1] + 1;
+  } else {
+    return 1;
+  }
 }
 
 function getNoColumns(ref) {
-  var rangeCorners = ref.split(':');
-  var topLeftCell = rangeCorners[0].split(/([0-9]+)/);
-  var bottomRightCell = rangeCorners[1].split(/([0-9]+)/);
-  var startColumn = getColumnNr(topLeftCell[0]);
-  var endColumn = getColumnNr(bottomRightCell[0]);
-  return endColumn - startColumn + 1;
+  if (ref.includes(':')) {
+    var rangeCorners = ref.split(':');
+    var topLeftCell = rangeCorners[0].split(/([0-9]+)/);
+    var bottomRightCell = rangeCorners[1].split(/([0-9]+)/);
+    var startColumn = getColumnNr(topLeftCell[0]);
+    var endColumn = getColumnNr(bottomRightCell[0]);
+    return endColumn - startColumn + 1;
+  } else {
+    return 1;
+  }
 }

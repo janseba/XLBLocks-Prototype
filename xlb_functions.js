@@ -1,64 +1,4 @@
 'use strict';
-function saveFormulaDefinition() {
-	Excel.run(function (context) {            
-		
-		// Get all worksheets
-		var sheets = context.workbook.worksheets;
-		sheets.load('items/name');
-
-		// Get workspace definition
-		var xml = Blockly.Xml.workspaceToDom(workspace);
-		var ws = {id:getFormulaID(xml), name:getFormulaName(xml), fullXML:Blockly.Xml.domToText(xml)}
-		
-		var rngDefinitions
-
-		return context.sync()
-		.then(function () {
-		
-			// Check if XLBlocks exists
-			if (sheetExists(sheets.items, 'XLBlocks')) {
-				// if 'XLBlocks' exists then getUsedRange
-				var sht = sheets.getItem('XLBlocks');
-				rngDefinitions = sht.getUsedRange();
-				rngDefinitions.load('values');
-				sht.delete();
-			}
-		})
-		.then(context.sync)
-		.then(function () {
-			if (typeof rngDefinitions === 'undefined') {
-				var xlValues = [];
-			} else {
-				var xlValues = rngDefinitions.values
-				xlValues.shift();
-			}
-			var ids = getCol(xlValues,0)
-			var index = ids.findIndex(function(id){return id === this},ws.id);
-			if ( index === -1) {
-				xlValues.push([ws.id, ws.name, ws.fullXML]);
-			} else {
-				xlValues[index][1] = ws.name;
-				xlValues[index][2] = ws.fullXML;
-			}
-			xlValues.unshift(['ID', 'Name', 'XML'])
-			var sht = sheets.add('XLBlocks');
-			var rng = sht.getRange('A1:C' + xlValues.length)
-			rng.values = xlValues;
-			replaceFormulaDdl(xlValues);
-			sht.visibility = Excel.SheetVisibility.hidden;
-			workspace.clear();
-		})
-	})
-	.catch(function (error) {
-		console.log("Error: " + error);
-		if (error instanceof OfficeExtension.Error) {
-			console.log("Debug info: " + JSON.stringify(error.debugInfo));
-		}
-	});
-}
-
-
-
 function replaceFormulaDdl(formulas) {
 	var select = document.getElementById('ddlFormulas');
 	select.options.length = 0;
@@ -144,10 +84,55 @@ function initWorkspace(formulas) {
 	Blockly.Xml.domToWorkspace(xml, workspace);
 }
 
+function newFormula() {
+	showBlockly()
+	toggleButton('changeFormula',true);
+	toggleButton('validateFormula', false);
+	toggleButton('cancel', false);
+}
+
 function showBlockly() {
 	var blocklyDiv = document.getElementById('blocklyDiv');
-	if (blocklyDiv.style.display === "none") {blocklyDiv.style.display = "block"};
-	var resizeEvent = window.document.createEvent('UIEvents');
-	resizeEvent .initUIEvent('resize', true, false, window, 0);
-	window.dispatchEvent(resizeEvent);
+	if (blocklyDiv.style.display === "none") {
+		blocklyDiv.style.display = "block"
+		var resizeEvent = window.document.createEvent('UIEvents');
+		resizeEvent .initUIEvent('resize', true, false, window, 0);
+		window.dispatchEvent(resizeEvent);
+	};
+}
+
+function getFormula() {
+	var formulaBlock = workspace.getBlocksByType('formula', false);
+	var code = Blockly.JavaScript.blockToCode(formulaBlock[0]);
+	code = JSON.parse(code);
+	return code;
+}
+
+function cancel() {
+	clearBlockly();
+	hideBlockly();
+	toggleButton('newFormula', false);
+	toggleButton('changeFormula', false);
+	toggleButton('cancel', true);
+	toggleButton('validateFormula', true);
+}
+
+function clearBlockly() {
+	workspace.clear();
+}
+
+function hideBlockly() {
+	var blocklyDiv = document.getElementById('blocklyDiv');
+	blocklyDiv.style.display = "none";
+}
+
+function toggleButton(id,isDisabled) {
+	var btnAdd = document.getElementById(id);
+	btnAdd.disabled = isDisabled;
+}
+
+function getWorkspace() {
+	var xml = Blockly.Xml.workspaceToDom(workspace);
+	var ws = {id:getFormulaID(xml), name:getFormulaName(xml), fullXML:Blockly.Xml.domToText(xml)}
+	return ws;
 }
