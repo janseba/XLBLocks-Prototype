@@ -358,9 +358,15 @@ Blockly.JavaScript['for_each_row'] = function(block) {
   var bottomRightRowColumn = bottomRight.split(/([0-9]+)/);
   var noRows = bottomRightRowColumn[1] - topLeftRowColumn[1] + 1;
   var ranges = new Array();
-  for (var row = 0; row < noRows; row++) {
-    ranges[row] = topLeftRowColumn[0] + (Number(topLeftRowColumn[1]) + row) + ":" 
-      + bottomRightRowColumn[0] + (Number(topLeftRowColumn[1]) + row)
+  if (topLeftRowColumn[0] === bottomRightRowColumn[0]) { // single column
+    for (var row = 0; row < noRows; row++) {
+      ranges[row] = topLeftRowColumn[0] + (Number(topLeftRowColumn[1]) + row)
+    }
+  } else {
+    for (var row = 0; row < noRows; row++) { // multiple columns
+      ranges[row] = topLeftRowColumn[0] + (Number(topLeftRowColumn[1]) + row) + ":" 
+        + bottomRightRowColumn[0] + (Number(topLeftRowColumn[1]) + row)
+    }
   }
   var code = ranges.join();
   // TODO: Change ORDER_NONE to the correct strength.
@@ -462,3 +468,16 @@ function getNoColumns(ref) {
     return 1;
   }
 }
+Blockly.JavaScript['lookup'] = function(block) {
+  var value_lookupvalue = Blockly.JavaScript.valueToCode(block, 'lookupValue', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_lookupcolumn = Blockly.JavaScript.valueToCode(block, 'lookupColumn', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_resultcolumn = Blockly.JavaScript.valueToCode(block, 'resultColumn', Blockly.JavaScript.ORDER_ATOMIC);
+  var lookupValues = value_lookupvalue.split(',');
+  var lookupFormulas = new Array();
+  for (var i = 0; i < lookupValues.length; i++) {
+    lookupFormulas[i] = 'INDEX(' + value_resultcolumn + '|MATCH(' + lookupValues[i] + '|' + value_lookupcolumn + '|0))'
+  }
+  // TODO: Assemble JavaScript into code variable.
+  var code = lookupFormulas.join();
+  return code;
+};

@@ -63,6 +63,11 @@
 					var code = getFormula();
 					var activeSheet = context.workbook.worksheets.getActiveWorksheet();
 					var formulaRange = activeSheet.getRange(code.outputRange);
+					for (var i = 0; i < code.statements.length; i++) {
+						for (var j = 0; j < code.statements[i].length; j++) {
+							code.statements[i][j] = code.statements[i][j].replace(/\|/g, ',')
+						}
+					}
 					formulaRange.formulas = code.statements;					
 				})
 				.then(context.sync)

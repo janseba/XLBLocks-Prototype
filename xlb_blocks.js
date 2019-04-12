@@ -100,3 +100,20 @@ Blockly.Blocks['lookup'] = {
  this.setHelpUrl("");
   }
 };
+
+Blockly.Blocks['subtract'] = {
+  init: function() {
+    this.appendValueInput("left_operand")
+        .setCheck(null);
+    this.appendDummyInput()
+        .appendField("-");
+    this.appendValueInput("right_operand")
+        .setCheck(null);
+    this.setInputsInline(false);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
