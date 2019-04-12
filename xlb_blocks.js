@@ -7,8 +7,10 @@ Blockly.Blocks['formula'] = {
         .setCheck(null)
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField("formula output");
-    this.appendStatementInput("statements")
-        .setCheck(null);
+    this.appendValueInput("statements")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("functions");
     this.setColour(20);
  this.setTooltip("");
  this.setHelpUrl("");
@@ -46,8 +48,7 @@ Blockly.Blocks['sum'] = {
     this.appendValueInput("sum_parameters")
         .setCheck(null);
     this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
+    this.setOutput(true, null);
     this.setColour(120);
  this.setTooltip("");
  this.setHelpUrl("");
@@ -93,8 +94,7 @@ Blockly.Blocks['lookup'] = {
     this.appendValueInput("resultColumn")
         .setCheck(null)
         .appendField("result column");
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
+    this.setOutput(true, null);
     this.setColour(120);
  this.setTooltip("This functions returns a value from the result column at the same row it finds a match in the lookup column");
  this.setHelpUrl("");
@@ -110,8 +110,7 @@ Blockly.Blocks['subtract'] = {
     this.appendValueInput("right_operand")
         .setCheck(null);
     this.setInputsInline(false);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
+    this.setOutput(true, null);
     this.setColour(120);
  this.setTooltip("");
  this.setHelpUrl("");

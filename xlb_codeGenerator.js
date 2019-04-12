@@ -481,3 +481,23 @@ Blockly.JavaScript['lookup'] = function(block) {
   var code = lookupFormulas.join();
   return code;
 };
+
+Blockly.JavaScript['subtract'] = function(block) {
+  var value_left_operand = Blockly.JavaScript.valueToCode(block, 'left_operand', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_right_operand = Blockly.JavaScript.valueToCode(block, 'right_operand', Blockly.JavaScript.ORDER_ATOMIC);
+  var leftOperands = value_left_operand.split(',');
+  var rightOperands = value_right_operand.split(',');
+  // TODO: Assemble JavaScript into code variable.
+  var subtractFormulas = new Array();
+  if (leftOperands.length === rightOperands.length) {
+    for (var i = 0; i < leftOperands.length; i++) {
+      subtractFormulas[i] = leftOperands[i] + '-' + rightOperands[i];
+    }    
+  } else {
+    return undefined;
+  }
+
+  var code = subtractFormulas.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
