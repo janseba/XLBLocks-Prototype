@@ -331,8 +331,8 @@ Blockly.JavaScript.getAdjusted = function(block, atId, opt_delta, opt_negate,
   }
   return at;
 };
-Blockly.JavaScript['sum'] = function(block) {
-  var sumParameters = Blockly.JavaScript.valueToCode(block, 'sum_parameters', Blockly.JavaScript.ORDER_ATOMIC);
+Blockly.JavaScript['fn_sum'] = function(block) {
+  var sumParameters = Blockly.JavaScript.valueToCode(block, 'sum_parameters', Blockly.JavaScript.ORDER_NONE);
   var parameters = sumParameters.split(',');
   var sumFormulas = new Array();
   for (var index = 0; index < parameters.length; index++) {
@@ -342,13 +342,15 @@ Blockly.JavaScript['sum'] = function(block) {
   var code = sumFormulas.join();
   return code;
 };
+
 Blockly.JavaScript['range'] = function(block) {
   var text_range_address = block.getFieldValue('range_address');
   // TODO: Assemble JavaScript into code variable.
   var code = text_range_address
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+  return [code, Blockly.JavaScript.ORDER_NONE];
 };
+
 Blockly.JavaScript['for_each_row'] = function(block) {
   var range = Blockly.JavaScript.valueToCode(block, 'range_each_row_in_range', Blockly.JavaScript.ORDER_NONE);
   var rangeCorners = range.split(":");
@@ -420,6 +422,204 @@ Blockly.JavaScript['formula'] = function(block) {
   var code = JSON.stringify(formula)
   return code;
 };
+
+Blockly.JavaScript['lookup'] = function(block) {
+  var value_lookupvalue = Blockly.JavaScript.valueToCode(block, 'lookupValue', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_lookupcolumn = Blockly.JavaScript.valueToCode(block, 'lookupColumn', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_resultcolumn = Blockly.JavaScript.valueToCode(block, 'resultColumn', Blockly.JavaScript.ORDER_ATOMIC);
+  var lookupValues = value_lookupvalue.split(',');
+  var lookupFormulas = new Array();
+  for (var i = 0; i < lookupValues.length; i++) {
+    lookupFormulas[i] = 'INDEX(' + value_resultcolumn + '|MATCH(' + lookupValues[i] + '|' + value_lookupcolumn + '|0))'
+  }
+  // TODO: Assemble JavaScript into code variable.
+  var code = lookupFormulas.join();
+  return code;
+};
+
+Blockly.JavaScript['fn_subtract'] = function(block) {
+  var value_left_operand = getCode(block, 'left_operand');
+  var value_right_operand = getCode(block, 'right_operand');
+  var leftOperands = value_left_operand.split(',');
+  var rightOperands = value_right_operand.split(',');
+  // TODO: Assemble JavaScript into code variable.
+  var subtractFormulas = new Array();
+
+  if (leftOperands.length === rightOperands.length || rightOperands.length === 1) {
+    for (var i = 0; i < leftOperands.length; i++) {
+      if (rightOperands.length > 1) {
+        subtractFormulas[i] = leftOperands[i] + '-' + rightOperands[i];  
+      } else {
+        subtractFormulas[i] = leftOperands[i] + '-' + rightOperands[0];          
+      }
+      
+    }    
+  } else {
+    return undefined;
+  }
+
+  var code = subtractFormulas.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.JavaScript['fn_divide'] = function(block) {
+  var value_numerator = getCode(block,'numerator');
+  var value_denominator = getCode(block, 'denominator');
+  var numerators = value_numerator.split(',')
+  var denominators = value_denominator.split(',')
+  // TODO: Assemble JavaScript into code variable.
+  var divideFormulas = new Array();
+  if (numerators.length === denominators.length) {
+    for (var i = 0; i < numerators.length; i++) {
+      divideFormulas[i] = numerators[i] + '/' + denominators[i]
+    }
+  } else {
+    return undefined
+  }
+  var code = divideFormulas.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.JavaScript['fn_if_error'] = function(block) {
+  var value_formula = getCode(block, 'formula');
+  var value_if_error = getCode(block, 'if_error');
+  var value_if_error = Blockly.JavaScript.valueToCode(block, 'if_error', Blockly.JavaScript.ORDER_NONE);
+  var formulas = value_formula.split(',');
+  var ifErrorFormulas = new Array();
+  // TODO: Assemble JavaScript into code variable.
+  for (var i = 0; i < formulas.length; i++) {
+    ifErrorFormulas[i] = 'IFERROR(' + formulas[i] + "|" + value_if_error + ')'
+  }
+  var code = ifErrorFormulas.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.JavaScript['fn_if'] = function(block) {
+  var value_test = getCode(block, 'test');
+  var value_when_true = getCode(block, 'when_true');
+  var value_when_false = getCode(block, 'when_false');
+  var tests = value_test.split(',');
+  var whenTrues = value_when_true.split(',');
+  var whenFalses = value_when_false.split(',');
+  var ifFormulas = new Array();
+    for (var i = 0; i < tests.length; i++) {
+      if (tests.length === whenTrues.length || whenTrues.length === 1) {
+        if (whenTrues.length > 1) {
+          var whenTrue = whenTrues[i];
+        } else {
+          var whenTrue = whenTrues[0];
+        }
+      } else {
+        return undefined
+      }
+      if (tests.length === whenFalses.length || whenFalses.length === 1) {
+        if (whenFalses.length > 1) {
+          var whenFalse = whenFalses[i];
+        } else {
+          var whenFalse = whenFalses[0];
+        }
+      } else {
+        return undefined
+      }
+      ifFormulas[i] = 'IF(' + tests[i] + '|' + whenTrue + '|' + whenFalse + ')'
+    }
+  var code = ifFormulas.join();
+  return code;
+};
+
+Blockly.JavaScript['c_number'] = function(block) {
+  var number_number = block.getFieldValue('number');
+  // TODO: Assemble JavaScript into code variable.
+  var code = number_number;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['c_text'] = function(block) {
+  var text_text = block.getFieldValue('text');
+  // TODO: Assemble JavaScript into code variable.
+  var code = '"' + text_text + '"';
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['fn_greater_than'] = function(block) {
+  var value_left_operand = getCode(block, 'left_operand');
+  var value_right_operand = getCode(block, 'right_operand');
+  var leftOperands = value_left_operand.split(',');
+  var rightOperands = value_right_operand.split(',');
+  var greaterThanFormulas = new Array();
+  if (leftOperands.length === rightOperands.length || rightOperands.length === 1) {
+    for (var i = 0; i < leftOperands.length; i++) {
+      if (rightOperands.length > 1) {
+        greaterThanFormulas[i] = leftOperands[i] + '>' + rightOperands[i];
+      } else {
+        greaterThanFormulas[i] = leftOperands[i] + '>' + rightOperands[0];
+      }
+    }
+  } else {
+    return undefined;
+  }
+  // TODO: Assemble JavaScript into code variable.
+  var code = greaterThanFormulas.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.JavaScript['fn_less_than'] = function(block) {
+  var value_left_operand = getCode(block, 'left_operand');
+  var value_right_operand = getCode(block, 'right_operand');
+  var leftOperands = value_left_operand.split(',');
+  var rightOperands = value_right_operand.split(',');
+  var lessThanFormulas = new Array();
+  if (leftOperands.length === rightOperands.length || rightOperands.length === 1) {
+    for (var i = 0; i < leftOperands.length; i++) {
+      if (rightOperands.length > 1) {
+        lessThanFormulas[i] = leftOperands[i] + '<' + rightOperands[i];
+      } else {
+        lessThanFormulas[i] = leftOperands[i] + '<' + rightOperands[0];
+      }
+    }
+  } else {
+    return undefined;
+  }
+  // TODO: Assemble JavaScript into code variable.
+  var code = lessThanFormulas.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.JavaScript['fn_sumifs'] = function(block) {
+  var value_sum_range = Blockly.JavaScript.valueToCode(block, 'sum_range', Blockly.JavaScript.ORDER_NONE);
+  var statements_filter_statements = Blockly.JavaScript.statementToCode(block, 'filter_statements').trim();
+  // TODO: Assemble JavaScript into code variable.
+  var code = 'SUMIFS(' + value_sum_range + statements_filter_statements + ')'
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.JavaScript['fn_sumifs_filters'] = function(block) {
+  var value_filter_column = Blockly.JavaScript.valueToCode(block, 'filter_column', Blockly.JavaScript.ORDER_NONE);
+  var value_filter_value = Blockly.JavaScript.valueToCode(block, 'filter_value', Blockly.JavaScript.ORDER_NONE);
+  // TODO: Assemble JavaScript into code variable.
+  var code = '|' + value_filter_column + '|' + value_filter_value
+  return code;
+};
+
+// helper functions
+
+function getCode(block, inputName) {
+  var inputBlock = block.getInputTargetBlock(inputName);
+  if (inputBlock.type.substring(0, 2) === 'fn') {
+    return Blockly.JavaScript.statementToCode(block, inputName).trim();
+  } else {
+    return Blockly.JavaScript.valueToCode(block, inputName, Blockly.JavaScript.ORDER_NONE);
+  }
+}
+
 function getColumnNr(ref) {
   var ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
   var chars = ref.split('');
@@ -475,55 +675,3 @@ function getNoColumns(ref) {
     return 1;
   }
 }
-Blockly.JavaScript['lookup'] = function(block) {
-  var value_lookupvalue = Blockly.JavaScript.valueToCode(block, 'lookupValue', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_lookupcolumn = Blockly.JavaScript.valueToCode(block, 'lookupColumn', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_resultcolumn = Blockly.JavaScript.valueToCode(block, 'resultColumn', Blockly.JavaScript.ORDER_ATOMIC);
-  var lookupValues = value_lookupvalue.split(',');
-  var lookupFormulas = new Array();
-  for (var i = 0; i < lookupValues.length; i++) {
-    lookupFormulas[i] = 'INDEX(' + value_resultcolumn + '|MATCH(' + lookupValues[i] + '|' + value_lookupcolumn + '|0))'
-  }
-  // TODO: Assemble JavaScript into code variable.
-  var code = lookupFormulas.join();
-  return code;
-};
-
-Blockly.JavaScript['subtract'] = function(block) {
-  var value_left_operand = Blockly.JavaScript.valueToCode(block, 'left_operand', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_right_operand = Blockly.JavaScript.valueToCode(block, 'right_operand', Blockly.JavaScript.ORDER_ATOMIC);
-  var leftOperands = value_left_operand.split(',');
-  var rightOperands = value_right_operand.split(',');
-  // TODO: Assemble JavaScript into code variable.
-  var subtractFormulas = new Array();
-  if (leftOperands.length === rightOperands.length) {
-    for (var i = 0; i < leftOperands.length; i++) {
-      subtractFormulas[i] = leftOperands[i] + '-' + rightOperands[i];
-    }    
-  } else {
-    return undefined;
-  }
-
-  var code = subtractFormulas.join();
-  // TODO: Change ORDER_NONE to the correct strength.
-  return code;
-};
-
-Blockly.JavaScript['divide'] = function(block) {
-  var value_numerator = Blockly.JavaScript.valueToCode(block, 'numerator', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_denominator = Blockly.JavaScript.valueToCode(block, 'denominator', Blockly.JavaScript.ORDER_ATOMIC);
-  var numerators = value_numerator.split(',')
-  var denominators = value_denominator.split(',')
-  // TODO: Assemble JavaScript into code variable.
-  var divideFormulas = new Array();
-  if (numerators.length === denominators.length) {
-    for (var i = 0; i < numerators.length; i++) {
-      divideFormulas[i] = numerators[i] + '/' + denominators[i]
-    }
-  } else {
-    return undefined
-  }
-  var code = divideFormulas.join();
-  // TODO: Change ORDER_NONE to the correct strength.
-  return code;
-};

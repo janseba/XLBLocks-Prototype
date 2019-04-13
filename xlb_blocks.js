@@ -1,6 +1,7 @@
 Blockly.Blocks['formula'] = {
   init: function() {
     this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
         .appendField("Formula")
         .appendField(new Blockly.FieldTextInput("formula name"), "formula_name");
     this.appendValueInput("output")
@@ -41,7 +42,7 @@ Blockly.Blocks['range'] = {
   }
 };
 
-Blockly.Blocks['sum'] = {
+Blockly.Blocks['fn_sum'] = {
   init: function() {
     this.appendDummyInput()
         .appendField("SUM");
@@ -59,7 +60,7 @@ Blockly.Blocks['for_each_row'] = {
   init: function() {
     this.appendValueInput("range_each_row_in_range")
         .setCheck(null)
-        .appendField("EACH ROW IN RANGE");
+        .appendField("FOR EACH ROW IN");
     this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(65);
@@ -72,7 +73,7 @@ Blockly.Blocks['for_each_column'] = {
   init: function() {
     this.appendValueInput("range_each_column_in_range")
         .setCheck(null)
-        .appendField("EACH COLUMN IN RANGE");
+        .appendField("FOR EACH COLUMN IN");
     this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(65);
@@ -101,7 +102,7 @@ Blockly.Blocks['lookup'] = {
   }
 };
 
-Blockly.Blocks['subtract'] = {
+Blockly.Blocks['fn_subtract'] = {
   init: function() {
     this.appendValueInput("left_operand")
         .setCheck(null);
@@ -117,18 +118,151 @@ Blockly.Blocks['subtract'] = {
   }
 };
 
-Blockly.Blocks['divide'] = {
+Blockly.Blocks['fn_divide'] = {
   init: function() {
     this.appendValueInput("numerator")
         .setCheck(null)
         .setAlign(Blockly.ALIGN_CENTRE);
     this.appendDummyInput()
-        .appendField("/");
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("divide by");
     this.appendValueInput("denominator")
+        .setCheck(null);
+    this.setInputsInline(false);
+    this.setOutput(true, null);
+    this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['fn_if_error'] = {
+  init: function() {
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("IFERROR");
+    this.appendValueInput("formula")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Formula");
+    this.appendValueInput("if_error")
+        .setCheck(null)
+        .appendField("In case of error");
+    this.setOutput(true, null);
+    this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['fn_if'] = {
+  init: function() {
+    this.appendValueInput("test")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("IF");
+    this.appendValueInput("when_true")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("THEN");
+    this.appendValueInput("when_false")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("ELSE");
+    this.setOutput(true, null);
+    this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['c_number'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("number")
+        .appendField(new Blockly.FieldNumber(0), "number");
+    this.setOutput(true, null);
+    this.setColour(160);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['fn_greater_than'] = {
+  init: function() {
+    this.appendValueInput("left_operand")
+        .setCheck(null);
+    this.appendDummyInput()
+        .appendField(">");
+    this.appendValueInput("right_operand")
         .setCheck(null);
     this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['c_text'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("text")
+        .appendField(new Blockly.FieldTextInput(""), "text");
+    this.setOutput(true, null);
+    this.setColour(160);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['fn_less_than'] = {
+  init: function() {
+    this.appendValueInput("left_operand")
+        .setCheck(null);
+    this.appendDummyInput()
+        .appendField("<");
+    this.appendValueInput("right_operand")
+        .setCheck(null);
+    this.setInputsInline(true);
+    this.setOutput(true, null);
+    this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['fn_sumifs'] = {
+  init: function() {
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("SUMIFS");
+    this.appendValueInput("sum_range")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("sum range");
+    this.appendStatementInput("filter_statements")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("filters");
+    this.setOutput(true, null);
+    this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['fn_sumifs_filters'] = {
+  init: function() {
+    this.appendValueInput("filter_column")
+        .setCheck(null)
+        .appendField("filter column");
+    this.appendValueInput("filter_value")
+        .setCheck(null)
+        .appendField("filter value");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(160);
  this.setTooltip("");
  this.setHelpUrl("");
   }

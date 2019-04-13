@@ -56,10 +56,20 @@
 
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
   <category name="Functions">
-    <block type="sum"></block>
+    <block type="fn_sum"></block>
+    <block type="fn_sumifs">
+      <statement name="filter_statements">
+        <block type="fn_sumifs_filters"></block>
+      </statement>
+    </block>
+    <block type="fn_sumifs_filters"></block>
     <block type="lookup"></block>
-    <block type="subtract"></block>
-    <block type="divide"></block>
+    <block type="fn_subtract"></block>
+    <block type="fn_divide"></block>
+    <block type="fn_if_error"></block>
+    <block type="fn_if"></block>
+    <block type="fn_greater_than"></block>
+    <block type="fn_less_than"></block>
   </category>
   <category name="Cell References">
     <block type="range">
@@ -73,7 +83,16 @@
       <field name="formula_name">formula name</field>
     </block>
   </category>
+  <category name="Constants">
+    <block type="c_number">
+      <field name="number">0</field>
+    </block>
+    <block type="c_text">
+      <field name="text"></field>
+    </block>
+  </category>
 </xml>
+
 <script type="text/javascript">
 	var newFormulaIcon = document.getElementById('testUI')
 	newFormulaIcon.addEventListener("click", function() {
