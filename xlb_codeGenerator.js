@@ -382,9 +382,16 @@ Blockly.JavaScript['for_each_column'] = function(block) {
   var noColumns = getNoColumns(range);
   var startColNr = getColumnNr(topLeftRowColumn[0])
   var ranges = new Array();
-  for (var col = 0; col < noColumns; col++) {
-    ranges[col] = getColumnCode(startColNr + col) + topLeftRowColumn[1] + ":" 
-      + getColumnCode(startColNr + col) + bottomRightRowColumn[1]
+  if (topLeftRowColumn[1] === bottomRightRowColumn[1]) { // single row
+    for (var col = 0; col < noColumns; col++) {
+      ranges[col] = getColumnCode(startColNr + col) + topLeftRowColumn[1];
+    }
+
+  } else { // multiple rows
+    for (var col = 0; col < noColumns; col++) {
+      ranges[col] = getColumnCode(startColNr + col) + topLeftRowColumn[1] + ":" 
+        + getColumnCode(startColNr + col) + bottomRightRowColumn[1]
+    }
   }
   var code = ranges.join();
   // TODO: Change ORDER_NONE to the correct strength.
@@ -498,6 +505,25 @@ Blockly.JavaScript['subtract'] = function(block) {
   }
 
   var code = subtractFormulas.join();
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.JavaScript['divide'] = function(block) {
+  var value_numerator = Blockly.JavaScript.valueToCode(block, 'numerator', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_denominator = Blockly.JavaScript.valueToCode(block, 'denominator', Blockly.JavaScript.ORDER_ATOMIC);
+  var numerators = value_numerator.split(',')
+  var denominators = value_denominator.split(',')
+  // TODO: Assemble JavaScript into code variable.
+  var divideFormulas = new Array();
+  if (numerators.length === denominators.length) {
+    for (var i = 0; i < numerators.length; i++) {
+      divideFormulas[i] = numerators[i] + '/' + denominators[i]
+    }
+  } else {
+    return undefined
+  }
+  var code = divideFormulas.join();
   // TODO: Change ORDER_NONE to the correct strength.
   return code;
 };

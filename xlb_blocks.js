@@ -116,3 +116,20 @@ Blockly.Blocks['subtract'] = {
  this.setHelpUrl("");
   }
 };
+
+Blockly.Blocks['divide'] = {
+  init: function() {
+    this.appendValueInput("numerator")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_CENTRE);
+    this.appendDummyInput()
+        .appendField("/");
+    this.appendValueInput("denominator")
+        .setCheck(null);
+    this.setInputsInline(true);
+    this.setOutput(true, null);
+    this.setColour(120);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
