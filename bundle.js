@@ -57,9 +57,27 @@
 				$('#cancel').click(cancel);
 				$('#changeFormula').click(editFormula);
 				$('#newFormula').click(newFormula);
+				$('#pasteRange').click(pasteRange);
 				getXLBlockList(replaceFormulaDdl);
 			});
 		});
+
+		function pasteRange() {
+			Excel.run(function (context) {
+				var range = context.workbook.getSelectedRange();
+				range.load('address');
+
+				return context.sync().then(function () {
+					copyToClipboard(range.address.slice(range.address.indexOf('!') + 1));
+				}).then(context.sync).then(function () {});
+			}).catch(function (error) {
+				console.log("Error: " + error);
+				if (error instanceof OfficeExtension.Error) {
+					console.log("Debug info: " + JSON.stringify(error.debugInfo));
+				}
+			});
+		}
+
 		function updateFormula() {
 			Excel.run(function (context) {
 
@@ -94,6 +112,8 @@
 					if (index === -1) {
 						xlValues.push([ws.id, ws.name, ws.fullXML]);
 					} else {
+						var xml = Blockly.Xml.textToDom(xlValues[index][2]);
+						var existingOutputRange = getFormulaOutput(xml);
 						xlValues[index][1] = ws.name;
 						xlValues[index][2] = ws.fullXML;
 					}
@@ -107,6 +127,10 @@
 					// update formulas in Excel
 					var code = getFormula();
 					var activeSheet = context.workbook.worksheets.getActiveWorksheet();
+					if (code.outputRange !== existingOutputRange && existingOutputRange !== undefined) {
+						var oldRange = activeSheet.getRange(existingOutputRange);
+						oldRange.clear('Contents');
+					}
 					var formulaRange = activeSheet.getRange(code.outputRange);
 					for (var i = 0; i < code.statements.length; i++) {
 						for (var j = 0; j < code.statements[i].length; j++) {
@@ -120,6 +144,7 @@
 					toggleButton('validateFormula', true);
 					toggleButton('newFormula', false);
 					toggleButton('cancel', false);
+					toggleButton('changeFormula', false);
 				});
 			}).catch(function (error) {
 				console.log("Error: " + error);
@@ -146,7 +171,7 @@
 				return context.sync().then(function () {
 					if (sheetExists(sheets.items, 'XLBlocks')) {
 						var xlBlockSht = sheets.getItem('XLBlocks');
-						var definitionsRng = xlBlockSht.getRange('A1:C5');
+						var definitionsRng = xlBlockSht.getUsedRange();
 						definitionsRng.load('values');
 						return definitionsRng;
 					}

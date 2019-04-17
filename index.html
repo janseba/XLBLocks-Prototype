@@ -45,6 +45,9 @@
 			<button class="ms-Button ms-Button--hero" id="cancel">
 				<span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Cancel" aria-hidden="true"></i></span>
 			</button>
+			<button class="ms-Button ms-Button--hero" id="pasteRange">
+				<span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Table" aria-hidden="true"></i></span>
+			</button>
 		</div>
 		<div class="blocklyFrame" id="blocklyArea"></div>
  	</div>
@@ -90,6 +93,9 @@
     <block type="c_text">
       <field name="text"></field>
     </block>
+    <block type="comments">
+      <field name="comment_text"></field>
+    </block>
   </category>
 </xml>
 
@@ -107,7 +113,7 @@
 <script >
 	var blocklyArea = document.getElementById('blocklyArea');
 	var blocklyDiv = document.getElementById('blocklyDiv');
-	var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox'), maxInstances: {formula: 1}, horizontalLayout: true, zoom: {startScale: 0.7}});
+	var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox'), maxInstances: {formula: 1}, horizontalLayout: true, zoom: {startScale: 0.8}});
 	var onresize = function(e) {
 		var element = blocklyArea;
 		var x = 0;

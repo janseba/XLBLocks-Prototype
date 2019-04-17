@@ -60,7 +60,7 @@ Blockly.Blocks['for_each_row'] = {
   init: function() {
     this.appendValueInput("range_each_row_in_range")
         .setCheck(null)
-        .appendField("FOR EACH ROW IN");
+        .appendField("EACH ROW");
     this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(65);
@@ -73,7 +73,7 @@ Blockly.Blocks['for_each_column'] = {
   init: function() {
     this.appendValueInput("range_each_column_in_range")
         .setCheck(null)
-        .appendField("FOR EACH COLUMN IN");
+        .appendField("EACH COLUMN");
     this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(65);
@@ -97,7 +97,7 @@ Blockly.Blocks['lookup'] = {
         .appendField("result column");
     this.setOutput(true, null);
     this.setColour(120);
- this.setTooltip("This functions returns a value from the result column at the same row it finds a match in the lookup column");
+ this.setTooltip("lookup value: the value to be found in the lookup column \n lookup column: range containing possilbe lookup values \n result column: range from wich the matching value should be returned.");
  this.setHelpUrl("");
   }
 };
@@ -110,7 +110,7 @@ Blockly.Blocks['fn_subtract'] = {
         .appendField("-");
     this.appendValueInput("right_operand")
         .setCheck(null);
-    this.setInputsInline(false);
+    this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(120);
  this.setTooltip("");
@@ -125,10 +125,10 @@ Blockly.Blocks['fn_divide'] = {
         .setAlign(Blockly.ALIGN_CENTRE);
     this.appendDummyInput()
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("divide by");
+        .appendField("/");
     this.appendValueInput("denominator")
         .setCheck(null);
-    this.setInputsInline(false);
+    this.setInputsInline(true);
     this.setOutput(true, null);
     this.setColour(120);
  this.setTooltip("");
@@ -247,7 +247,7 @@ Blockly.Blocks['fn_sumifs'] = {
         .appendField("filters");
     this.setOutput(true, null);
     this.setColour(120);
- this.setTooltip("");
+ this.setTooltip("sum range: the actual cells to sum");
  this.setHelpUrl("");
   }
 };
@@ -263,6 +263,18 @@ Blockly.Blocks['fn_sumifs_filters'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(160);
+ this.setTooltip("filter column: the range of cells you want evaluated for the particular condition \n filter value: the condition that defines which cells will be added");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['comments'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Comments")
+        .appendField(new Blockly.FieldTextInput(""), "comment_text");
+    this.setInputsInline(true);
+    this.setColour(230);
  this.setTooltip("");
  this.setHelpUrl("");
   }

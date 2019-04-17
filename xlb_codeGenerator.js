@@ -348,7 +348,7 @@ Blockly.JavaScript['range'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = text_range_address
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_NONE];
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 Blockly.JavaScript['for_each_row'] = function(block) {
@@ -595,8 +595,31 @@ Blockly.JavaScript['fn_less_than'] = function(block) {
 Blockly.JavaScript['fn_sumifs'] = function(block) {
   var value_sum_range = Blockly.JavaScript.valueToCode(block, 'sum_range', Blockly.JavaScript.ORDER_NONE);
   var statements_filter_statements = Blockly.JavaScript.statementToCode(block, 'filter_statements').trim();
-  // TODO: Assemble JavaScript into code variable.
-  var code = 'SUMIFS(' + value_sum_range + statements_filter_statements + ')'
+  var filterStatements = statements_filter_statements.slice(0,-1).split('#');
+  var singleFilters = new Array();
+  var eachRowFilters = new Array();
+  for (var i = 0; i < filterStatements.length; i++) {
+    var filterArray = filterStatements[i].split(',');
+    if (filterArray.length > 1) {
+      eachRowFilters.push(filterArray);
+    } else {
+      singleFilters.push(filterArray);
+    }
+  }
+  var sumifsFormulas = new Array();
+  for (var i = 0; i < eachRowFilters[0].length; i++) {
+    var sumifs = 'SUMIFS(' + value_sum_range
+    for (var j = 0; j < singleFilters.length; j++) {
+      sumifs += singleFilters[j][0]; 
+    }
+    for (var j = 0; j < eachRowFilters.length; j++) {
+      sumifs += eachRowFilters[j][i]
+    }
+    sumifs += ')'
+    sumifsFormulas.push(sumifs);
+  }
+
+  var code = sumifsFormulas.join();
   // TODO: Change ORDER_NONE to the correct strength.
   return code;
 };
@@ -604,8 +627,13 @@ Blockly.JavaScript['fn_sumifs'] = function(block) {
 Blockly.JavaScript['fn_sumifs_filters'] = function(block) {
   var value_filter_column = Blockly.JavaScript.valueToCode(block, 'filter_column', Blockly.JavaScript.ORDER_NONE);
   var value_filter_value = Blockly.JavaScript.valueToCode(block, 'filter_value', Blockly.JavaScript.ORDER_NONE);
+  var filterValues = value_filter_value.split(',');
+  var filterFormulas = new Array();
   // TODO: Assemble JavaScript into code variable.
-  var code = '|' + value_filter_column + '|' + value_filter_value
+  for (var i = 0; i < filterValues.length; i++) {
+    filterFormulas[i] = '|' + value_filter_column + '|' + filterValues[i]
+  }
+  var code = filterFormulas.join() + '#';
   return code;
 };
 

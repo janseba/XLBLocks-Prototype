@@ -64,6 +64,18 @@ function getFormulaName(xml) {
 	return name;
 }
 
+function getFormulaOutput(xml) {
+	var block = xml.getElementsByTagName('block');
+	for (var i = 0; i < block.length; i++) {
+		if (block[i].getAttribute('type') == 'formula') {
+			var xml = $(block[i])
+			var outputRange = xml.find('value[name="output"]').text()
+			break;
+		}
+	}
+	return outputRange;
+}
+
 function getCol(matrix, col) {
 	var column = [];
 	for (var i = 0; i < matrix.length; i++) {
@@ -133,6 +145,18 @@ function toggleButton(id,isDisabled) {
 
 function getWorkspace() {
 	var xml = Blockly.Xml.workspaceToDom(workspace);
-	var ws = {id:getFormulaID(xml), name:getFormulaName(xml), fullXML:Blockly.Xml.domToText(xml)}
+	var ws = {id:getFormulaID(xml), name:getFormulaName(xml), fullXML:Blockly.Xml.domToText(xml), outputRange:getFormulaOutput(xml)}
 	return ws;
+}
+
+function copyToClipboard(str) {
+	const el = document.createElement('textarea');
+	el.value =str;
+	el.setAttribute('readonly', '');
+	el.style.position ='absolute';
+	el.style.left = '-9999px';
+	document.body.appendChild(el);
+	el.select();
+	document.execCommand('copy');
+	document.body.removeChild(el);
 }
