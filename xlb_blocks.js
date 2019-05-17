@@ -91,13 +91,13 @@ Blockly.Blocks['lookup'] = {
         .appendField("lookup value");
     this.appendValueInput("lookupColumn")
         .setCheck(null)
-        .appendField("lookup column");
+        .appendField("lookup range");
     this.appendValueInput("resultColumn")
         .setCheck(null)
-        .appendField("result column");
+        .appendField("result range");
     this.setOutput(true, null);
     this.setColour(120);
- this.setTooltip("lookup value: the value to be found in the lookup column \n lookup column: range containing possilbe lookup values \n result column: range from wich the matching value should be returned.");
+ this.setTooltip("lookup value: the value to be found in the lookup range \n lookup range: range containing possilbe lookup values \n result range: range from wich the matching value should be returned.");
  this.setHelpUrl("");
   }
 };
