@@ -12,17 +12,55 @@
 	<script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
 	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="editor.js"></script>
+	<script type="text/javascript" src="blockly/blockly_compressed.js"></script>
+	<script type="text/javascript" src="xlb_codeGenerator.js"></script>
+	<script type="text/javascript" src="blockly/blocks_compressed.js"></script>
+	<script type="text/javascript" src="xlb_blocks.js"></script>
+	<script type="text/javascript" src="blockly/msg/js/en.js"></script>
 
 </head>
 <body style="display:flex;flex-direction:column;align-items:center;justify-content:center">
 	<div class="padding">
-		<p class="ms-font-xl">ENTER YOUR NAME</p>
+		<p class="ms-font-xl">Blockly Editor</p>
+	</div>
+	<div id="blocklyDiv" style="height: 480px; width: 1080px;"></div>
+	<div class="padding">
+		<button class="ms-Button" id="save-formulas">
+			Save Formulas
+		</button>
+		<button class="ms-Button" id="show-code">
+			Show Code
+		</button>
+		<button class="ms-Button" id="refresh-page">
+			Refresh Page
+		</button>
 	</div>
 	<div class="padding">
-		<input id="name-box" type="text"/>
+		<p id="code"></p>
 	</div>
-	<div class="padding">
-		<button id="ok-button" class="ms-Button">OK</button>
-	</div>
+	
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="Functions">
+    <block type="sum"></block>
+  </category>
+  <category name="Cell References">
+    <block type="for_each_row"></block>
+    <block type="range">
+      <field name="range_address">range</field>
+    </block>
+  </category>
+  <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>
+  <category name="Workbook Management">
+    <block type="definenamedranges"></block>
+    <block type="formula">
+      <field name="formula_name">formula name</field>
+    </block>
+  </category>
+</xml>
+
+<script >
+	var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox'), maxInstances: {formula: 1}});
+</script>	
+
 </body>
 </html>
