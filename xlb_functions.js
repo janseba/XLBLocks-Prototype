@@ -89,7 +89,7 @@ function initWorkspace(formulas) {
 	var ddlFormulas = document.getElementById('ddlFormulas');
 	var selectedFormulaID = ddlFormulas.options(ddlFormulas.selectedIndex).value;
 	var ids = getCol(formulas,0)
-	var selectedIndex = ids.findIndex(function(id){return id === this},selectedFormulaID)
+	var selectedIndex = ids.indexOf(selectedFormulaID)
 	workspace.clear();
 	var xml_text = formulas[selectedIndex][2];
 	var xml = Blockly.Xml.textToDom(xml_text);

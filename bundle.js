@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ function(module, exports) {
 
 	'use strict';
 
@@ -106,9 +106,7 @@
 					}
 					var ws = getWorkspace();
 					var ids = getCol(xlValues, 0);
-					var index = ids.findIndex(function (id) {
-						return id === this;
-					}, ws.id);
+					var index = ids.indexOf(ws.id);
 					if (index === -1) {
 						xlValues.push([ws.id, ws.name, ws.fullXML]);
 					} else {
@@ -252,5 +250,5 @@
 		}
 	})();
 
-/***/ })
+/***/ }
 /******/ ]);
