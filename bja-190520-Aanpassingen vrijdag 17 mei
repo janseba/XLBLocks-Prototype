@@ -1,0 +1,11 @@
+	var selectedIndex = ids.findIndex(function(id){return id === this},selectedFormulaID)
+
+	//var selectedIndex = ids.findIndex(function(id){return id === this},selectedFormulaID)
+
+
+			<button class="ms-Button ms-Button--hero" id="testFeature">
+				<span class="ms-Button-icon"><i class="ms-Icon ms-Icon--TestAutoSolid" aria-hidden="true"></i></span>
+			</button>
+
+	<link rel="stylesheet" href="node_modules/office-ui-fabric-core/dist/css/fabric.css" />
+	<div class="outer" id="content-main" dir="ltr">
